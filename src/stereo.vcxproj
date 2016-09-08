@@ -110,7 +110,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="core\assembly.cpp" />
     <ClCompile Include="stereo.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="common\typedef.h" />
+    <ClInclude Include="core\assembly.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

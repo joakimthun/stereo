@@ -15,6 +15,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="core\assembly.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\typedef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="core\assembly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="stereo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
