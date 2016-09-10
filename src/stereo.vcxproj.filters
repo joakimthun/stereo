@@ -15,18 +15,42 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="core\assembly.h">
+    <ClInclude Include="common\typedef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\typedef.h">
+    <ClInclude Include="common\byteswap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\ilogger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\console_logger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\file_util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pe\pe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pe\pe_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pe\pe_image_reader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="core\assembly.cpp">
+    <ClCompile Include="stereo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="stereo.cpp">
+    <ClCompile Include="common\ilogger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\console_logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pe\pe_image_reader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

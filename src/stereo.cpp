@@ -1,10 +1,9 @@
-#include "core/assembly.h"
+#include "pe\pe_image_reader.h"
 
 int main(int argc, char *argv[])
 {
-	auto exe = stereo::Assembly::load_from_file("../test_files/ConsoleApplication_Any.exe");
-
-	auto dll = stereo::Assembly::load_from_file("../test_files/ClassLibrary1.dll");
+	auto exe_reader = stereo::PEImageReader::load_image("../test_files/ConsoleApplication_Any.exe");
+    auto dll_reader = stereo::PEImageReader::load_image("../test_files/ClassLibrary1.dll");
 
 	return 0;
 }
