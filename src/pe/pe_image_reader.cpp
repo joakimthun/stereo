@@ -48,16 +48,6 @@ namespace stereo {
             if (!reader->read_tables())
                 return nullptr;
 
-
-            //// Test //////
-
-            auto ept = reader->image_->cli_header.entry_point_token;
-
-            auto ep = ept & 0x00ffffff;
-
-
-            //// Test //////
-
             return reader->release_image();
         }
 

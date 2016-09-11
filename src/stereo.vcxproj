@@ -122,12 +122,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="assemblies\assembly.cpp" />
     <ClCompile Include="common\console_logger.cpp" />
     <ClCompile Include="common\ilogger.cpp" />
     <ClCompile Include="pe\pe_image_reader.cpp" />
     <ClCompile Include="stereo.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="assemblies\assembly.h" />
     <ClInclude Include="common\byteswap.h" />
     <ClInclude Include="common\console_logger.h" />
     <ClInclude Include="common\file_util.h" />
