@@ -221,8 +221,8 @@ namespace stereo {
         struct TableInfo
         {
             const u8* base;
-            u32       rows;
-            u32       row_size;
+            u32 rows;
+            u32 row_size;
         };
 
         struct CLIStreamInfo

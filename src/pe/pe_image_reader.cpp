@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "../common/file_util.h"
+#include "../common/ptr_util.h"
 
 namespace stereo {
     namespace pe {
@@ -161,22 +162,22 @@ namespace stereo {
             auto base_metadata_ptr = image_->raw_data + metadata_base;
             auto metadata_ptr = const_cast<u8*>(base_metadata_ptr);
 
-            auto signature = read32(metadata_ptr);
+            auto signature = common::read32(metadata_ptr);
 
             if (signature == 0x424A5342) {
 
                 // Skip over signature
                 metadata_ptr += 4;
 
-                image_->md_version_major = read16(metadata_ptr);
+                image_->md_version_major = common::read16(metadata_ptr);
                 metadata_ptr += 2;
 
-                image_->md_version_minor = read16(metadata_ptr);
+                image_->md_version_minor = common::read16(metadata_ptr);
 
                 // Skip the bytes we just read and the 4 reserved bytes
                 metadata_ptr += 6;
 
-                auto version_string_len = read32(metadata_ptr);
+                auto version_string_len = common::read32(metadata_ptr);
                 metadata_ptr += 4;
 
                 char buffer[255];
@@ -210,45 +211,45 @@ namespace stereo {
             auto base_metadata_ptr = image_->raw_data + metadata_base;
             auto stream_ptr = read_result.current_read_position_ptr;
 
-            auto num_streams = read16(stream_ptr);
+            auto num_streams = common::read16(stream_ptr);
             stream_ptr += 2;
 
             for (auto i = 0; i < num_streams; i++)
             {
                 if (strncmp((char*)stream_ptr + 8, "#~", 3) == 0)
                 {
-                    image_->heap_tables.data = base_metadata_ptr + read32(stream_ptr);
-                    image_->heap_tables.size = read32(stream_ptr + 4);
+                    image_->heap_tables.data = base_metadata_ptr + common::read32(stream_ptr);
+                    image_->heap_tables.size = common::read32(stream_ptr + 4);
                     stream_ptr += 8 + 3;
                 }
                 else if (strncmp((char*)stream_ptr + 8, "#Strings", 9) == 0)
                 {
-                    image_->heap_strings.data = base_metadata_ptr + read32(stream_ptr);
-                    image_->heap_strings.size = read32(stream_ptr + 4);
+                    image_->heap_strings.data = base_metadata_ptr + common::read32(stream_ptr);
+                    image_->heap_strings.size = common::read32(stream_ptr + 4);
                     stream_ptr += 8 + 9;
                 }
                 else if (strncmp((char*)stream_ptr + 8, "#US", 4) == 0)
                 {
-                    image_->heap_us.data = base_metadata_ptr + read32(stream_ptr);
-                    image_->heap_us.size = read32(stream_ptr + 4);
+                    image_->heap_us.data = base_metadata_ptr + common::read32(stream_ptr);
+                    image_->heap_us.size = common::read32(stream_ptr + 4);
                     stream_ptr += 8 + 4;
                 }
                 else if (strncmp((char*)stream_ptr + 8, "#Blob", 6) == 0)
                 {
-                    image_->heap_blob.data = base_metadata_ptr + read32(stream_ptr);
-                    image_->heap_blob.size = read32(stream_ptr + 4);
+                    image_->heap_blob.data = base_metadata_ptr + common::read32(stream_ptr);
+                    image_->heap_blob.size = common::read32(stream_ptr + 4);
                     stream_ptr += 8 + 6;
                 }
                 else if (strncmp((char*)stream_ptr + 8, "#GUID", 6) == 0)
                 {
-                    image_->heap_guid.data = base_metadata_ptr + read32(stream_ptr);
-                    image_->heap_guid.size = read32(stream_ptr + 4);
+                    image_->heap_guid.data = base_metadata_ptr + common::read32(stream_ptr);
+                    image_->heap_guid.size = common::read32(stream_ptr + 4);
                     stream_ptr += 8 + 6;
                 }
                 else if (strncmp((char*)stream_ptr + 8, "#Pdb", 5) == 0)
                 {
-                    image_->heap_pdb.data = base_metadata_ptr + read32(stream_ptr);
-                    image_->heap_pdb.size = read32(stream_ptr + 4);
+                    image_->heap_pdb.data = base_metadata_ptr + common::read32(stream_ptr);
+                    image_->heap_pdb.size = common::read32(stream_ptr + 4);
                     stream_ptr += 8 + 5;
                 }
                 else
@@ -306,24 +307,22 @@ namespace stereo {
                 }
                 else
                 {
-                    image_->tables[table].rows = read32((u8*)rows);
+                    image_->tables[table].rows = common::read32((u8*)rows);
                 }
 
                 rows++;
                 valid++;
             }
 
-            auto tables_base = (heap_tables_ptr + cli_stream_info_size) + (4 * valid);
-            if (tables_base != (u8*)rows)
+            auto tables_base_ptr = (heap_tables_ptr + cli_stream_info_size) + (4 * valid);
+            if (tables_base_ptr != (u8*)rows)
             {
                 logger_->LogError("Offset mismatch when reading the number of rows in each table");
                 return false;
             }
 
             // Set table base pointers
-
-            auto table_base = heap_tables_ptr;
-
+            auto current_table_base_ptr = tables_base_ptr;
             for (auto i = 0; i < PEImage::MAX_NUM_METADATA_TABLES; i++)
             {
                 auto table = &image_->tables[i];
@@ -331,8 +330,8 @@ namespace stereo {
                     continue;
 
                 table->row_size = compute_metadata_row_size(static_cast<MetadataTable>(i));
-                table->base = table_base;
-                table_base += table->rows * table->row_size;
+                table->base = current_table_base_ptr;
+                current_table_base_ptr += table->rows * table->row_size;
             }
 
             return true;
@@ -370,21 +369,6 @@ namespace stereo {
         void PEImageReader::read(void* dest, u32 num_bytes, const void* src)
         {
             std::memcpy(dest, src, num_bytes);
-        }
-
-        u16 PEImageReader::read16(const u8* ptr)
-        {
-            return *((u16*)ptr);
-        }
-
-        u32 PEImageReader::read32(const u8* ptr)
-        {
-            return *((u32*)ptr);
-        }
-
-        u64 PEImageReader::read64(const u8* ptr)
-        {
-            return *((u64*)ptr);
         }
 
         u32 PEImageReader::get_table_length(MetadataTable table_type)

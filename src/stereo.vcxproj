@@ -130,10 +130,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="assemblies\assembly.h" />
+    <ClInclude Include="assemblies\method_def.h" />
+    <ClInclude Include="assemblies\module_def.h" />
     <ClInclude Include="common\byteswap.h" />
     <ClInclude Include="common\console_logger.h" />
     <ClInclude Include="common\file_util.h" />
     <ClInclude Include="common\ilogger.h" />
+    <ClInclude Include="common\ptr_util.h" />
     <ClInclude Include="common\typedef.h" />
     <ClInclude Include="pe\pe_image.h" />
     <ClInclude Include="pe\pe.h" />

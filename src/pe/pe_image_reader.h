@@ -36,9 +36,6 @@ namespace stereo {
             void read_from_current_offset(void* dest, u32 num_bytes);
             void read(void* dest, u32 num_bytes, u32 offset);
             void read(void* dest, u32 num_bytes, const void* src);
-            u16 read16(const u8* ptr);
-            u32 read32(const u8* ptr);
-            u64 read64(const u8* ptr);
             u32 get_table_length(MetadataTable table_type);
             u8 get_table_index_size(MetadataTable table_type);
             u8 get_coded_index_size(CodedIndexType type);
