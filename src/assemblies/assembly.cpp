@@ -23,6 +23,11 @@ namespace stereo {
             return module_.get();
         }
 
+        const std::vector<std::unique_ptr<MethodDef>>& Assembly::get_methods()
+        {
+            return methods_;
+        }
+
         void Assembly::read_module()
         {
             module_ = std::make_unique<ModuleDef>();

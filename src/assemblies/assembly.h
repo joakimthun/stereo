@@ -19,6 +19,7 @@ namespace stereo {
 
             u32 get_entry_point();
             const ModuleDef* get_module();
+            const std::vector<std::unique_ptr<MethodDef>>& get_methods();
 
             void read_module();
             void read_method(u32 rid);
