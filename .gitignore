@@ -234,3 +234,4 @@ $RECYCLE.BIN/
 *.lnk
 *.opendb
 src/tests/test_files/e.bmp
+*.db
