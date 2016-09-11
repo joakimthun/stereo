@@ -62,12 +62,19 @@ namespace stereo {
             RequireSecObject = 0x8000	 // Method calls another method containing security code
         };
 
+        struct MethodBody
+        {
+            u32 max_stack_size;
+            u32 code_size;
+        };
+
         struct MethodDef
         {
             u32 rva;
             MethodImplAttributes impl_attributes;
             MethodAttributes attributes;
-            std::wstring name;
+            std::string name;
+            std::unique_ptr<MethodBody> body;
         };
 
     }

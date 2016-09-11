@@ -238,5 +238,9 @@ namespace stereo {
 
 #pragma pack(pop)
 
+        // Defines
+
+        #define CorILMethod_TinyFormat 0x2
+        #define CorILMethod_FatFormat 0x3
     }
 }

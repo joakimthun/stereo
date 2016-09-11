@@ -50,7 +50,44 @@ namespace stereo {
             method->attributes = static_cast<MethodAttributes>(common::read16(table_row_ptr));
             table_row_ptr += 2;
 
-            //method->name = 
+            auto name_string_index = read_string_index(&table_row_ptr);
+            method->name = read_string(name_string_index);
+
+            // TODO: Read signature, parameters etc
+
+            read_method_body(method.get());
+
+            methods_.push_back(std::move(method));
+        }
+
+        void Assembly::read_method_body(MethodDef* method)
+        {
+            method->body = std::make_unique<MethodBody>();
+            auto method_body_ptr = get_method_body_ptr(method->rva);
+
+            // The two least significant bits of the first byte of the method header indicate what type of header is present.
+            auto header_flag = *method_body_ptr;
+            method_body_ptr++;
+
+            auto tiny_header = (header_flag & 0x3) == CorILMethod_TinyFormat;
+            if (tiny_header)
+            {
+                // Tiny headers use a 6-bit length encoding
+                method->body->code_size = header_flag >> 2;
+                // The operand stack shall be no bigger than 8 entries
+                method->body->max_stack_size = 8;
+
+                read_method_body_instructions(method);
+            }
+            else
+            {
+                // TODO: Implement fat header reading
+            }
+        }
+
+        void Assembly::read_method_body_instructions(MethodDef * method)
+        {
+
         }
 
         std::string Assembly::read_string(u32 index)
@@ -91,6 +128,28 @@ namespace stereo {
                 return nullptr;
 
             return const_cast<u8*>(table.base + (table.row_size * (rid - 1)));
+        }
+
+        const u8* Assembly::get_method_body_ptr(u32 rva)
+        {
+            return image_->raw_data + resolve_rva(rva);
+        }
+
+        u32 Assembly::resolve_rva(u32 rva)
+        {
+            auto section = resolve_rva_section(rva);
+            return rva + section->raw_data_ptr - section->virtual_address;
+        }
+
+        const pe::SectionTable* Assembly::resolve_rva_section(u32 rva)
+        {
+            for (auto& s : image_->cli_section_tables)
+            {
+                if (rva >= s->virtual_address && rva < s->virtual_address + s->raw_data_size)
+                    return s.get();
+            }
+
+            return nullptr;
         }
     }
 }
