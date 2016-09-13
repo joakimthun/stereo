@@ -51,6 +51,9 @@
     <ClInclude Include="assemblies\module_def.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="assemblies\opcodes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stereo.cpp">

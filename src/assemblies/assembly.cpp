@@ -1,13 +1,14 @@
 #include "assembly.h"
 
 #include "../common/ptr_util.h"
-#include "../common/byteswap.h"
+#include "opcodes.h"
 
 namespace stereo {
     namespace assemblies {
 
         Assembly::Assembly(const pe::PEImage* image)
             :
+            logger_(std::make_unique<common::ConsoleLogger>()),
             image_(image)
         {
         }
@@ -82,7 +83,7 @@ namespace stereo {
                 // The operand stack shall be no bigger than 8 entries
                 method->body->max_stack_size = 8;
 
-                read_method_body_instructions(method);
+                read_method_body_instructions(method, method_body_ptr);
             }
             else
             {
@@ -90,9 +91,44 @@ namespace stereo {
             }
         }
 
-        void Assembly::read_method_body_instructions(MethodDef * method)
+        void Assembly::read_method_body_instructions(MethodDef * method, const u8* method_body_ptr)
         {
+            auto opcode = *method_body_ptr;
+            method_body_ptr++;
 
+            switch (static_cast<Opcodes>(opcode))
+            {
+            case Opcodes::Ldstr: {
+                logger_->LogInfo("ldstr");
+                auto operand = common::read32(method_body_ptr);
+                u32 index = operand & 0x00ffffff;
+                auto str = read_us_string(index);
+                logger_->LogInfo(str);
+            }
+            default:
+                break;
+            }
+        }
+
+        std::string Assembly::read_us_string(u32 index)
+        {
+            std::string value;
+
+            if (index == 0)
+                return value;
+
+            auto string_ptr = image_->heap_us.data + index;
+            auto length = *string_ptr & 0xfffffffe;
+            string_ptr++;
+
+            // TODO: Fix this according to II.24.2.4 #US and #Blob heaps
+            // and read is at utf-16, not every other byte.....
+            for (auto i = 0; i < length; i += 2)
+            {
+                value += (char)string_ptr[i];
+            }
+
+            return value;
         }
 
         std::string Assembly::read_string(u32 index)
