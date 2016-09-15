@@ -9,7 +9,8 @@ namespace stereo {
 
         enum class Opcodes : u8
         {
-            Ldstr = 0x72
+            Ldstr = 0x72,
+            Call = 0x28
         };
 
         struct Opcode

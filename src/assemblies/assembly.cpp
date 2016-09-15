@@ -47,14 +47,11 @@ namespace stereo {
             auto table_row_ptr = get_table_row_ptr(pe::MetadataTable::Method, rid);
             auto method = std::make_unique<MethodDef>();
 
-            method->rva = common::read32(table_row_ptr);
-            table_row_ptr += 4;
+            method->rva = common::read32(&table_row_ptr);
 
-            method->impl_attributes = static_cast<MethodImplAttributes>(common::read16(table_row_ptr));
-            table_row_ptr += 2;
+            method->impl_attributes = static_cast<MethodImplAttributes>(common::read16(&table_row_ptr));
 
-            method->attributes = static_cast<MethodAttributes>(common::read16(table_row_ptr));
-            table_row_ptr += 2;
+            method->attributes = static_cast<MethodAttributes>(common::read16(&table_row_ptr));
 
             auto name_string_index = read_string_index(&table_row_ptr);
             method->name = read_string(name_string_index);
@@ -91,22 +88,36 @@ namespace stereo {
             }
         }
 
-        void Assembly::read_method_body_instructions(MethodDef * method, const u8* method_body_ptr)
+        void Assembly::read_method_body_instructions(MethodDef * method, u8* method_body_ptr)
         {
-            auto opcode = *method_body_ptr;
-            method_body_ptr++;
+            auto opcode = common::read8(&method_body_ptr);
+            auto read = true;
 
-            switch (static_cast<Opcodes>(opcode))
+            while (read)
             {
-            case Opcodes::Ldstr: {
-                logger_->LogInfo(L"ldstr");
-                auto operand = common::read32(method_body_ptr);
-                u32 index = operand & 0x00ffffff;
-                auto str = read_us_string(index);
-                logger_->LogInfo(str);
-            }
-            default:
-                break;
+                switch (static_cast<Opcodes>(opcode))
+                {
+                case Opcodes::Ldstr: {
+                    logger_->LogInfo(L"ldstr");
+                    auto operand = common::read32(&method_body_ptr);
+
+                    u32 index = operand & 0x00ffffff;
+                    auto str = read_us_string(index);
+                    logger_->LogInfo(str);
+                    break;
+                }
+                case Opcodes::Call: {
+                    logger_->LogInfo(L"call");
+
+                    // TODO: Break on ret
+                    read = false;
+                    break;
+                }
+                default:
+                    break;
+                }
+
+                opcode = *method_body_ptr;
             }
         }
 
@@ -146,13 +157,11 @@ namespace stereo {
             u32 str_index = 0;
             if (index_size == 2)
             {
-                str_index = common::read16(*index_ptr);
-                *index_ptr += 2;
+                str_index = common::read16(index_ptr);
             }
             else
             {
-                str_index = common::read32(*index_ptr);
-                *index_ptr += 4;
+                str_index = common::read32(index_ptr);
             }
 
             return str_index;
@@ -167,9 +176,9 @@ namespace stereo {
             return const_cast<u8*>(table.base + (table.row_size * (rid - 1)));
         }
 
-        const u8* Assembly::get_method_body_ptr(u32 rva)
+        u8* Assembly::get_method_body_ptr(u32 rva)
         {
-            return image_->raw_data + resolve_rva(rva);
+            return const_cast<u8*>(image_->raw_data) + resolve_rva(rva);
         }
 
         u32 Assembly::resolve_rva(u32 rva)

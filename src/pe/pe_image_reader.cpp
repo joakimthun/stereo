@@ -163,23 +163,18 @@ namespace stereo {
             auto base_metadata_ptr = image_->raw_data + metadata_base;
             auto metadata_ptr = const_cast<u8*>(base_metadata_ptr);
 
-            auto signature = common::read32(metadata_ptr);
+            auto signature = common::read32(&metadata_ptr);
 
             if (signature == 0x424A5342) {
 
-                // Skip over signature
+                image_->md_version_major = common::read16(&metadata_ptr);
+
+                image_->md_version_minor = common::read16(&metadata_ptr);
+
+                // Skip the 4 reserved bytes
                 metadata_ptr += 4;
 
-                image_->md_version_major = common::read16(metadata_ptr);
-                metadata_ptr += 2;
-
-                image_->md_version_minor = common::read16(metadata_ptr);
-
-                // Skip the bytes we just read and the 4 reserved bytes
-                metadata_ptr += 6;
-
-                auto version_string_len = common::read32(metadata_ptr);
-                metadata_ptr += 4;
+                auto version_string_len = common::read32(&metadata_ptr);
 
                 char buffer[255];
                 strncpy(buffer, (char*)metadata_ptr, version_string_len);
@@ -212,45 +207,44 @@ namespace stereo {
             auto base_metadata_ptr = image_->raw_data + metadata_base;
             auto stream_ptr = read_result.current_read_position_ptr;
 
-            auto num_streams = common::read16(stream_ptr);
-            stream_ptr += 2;
+            auto num_streams = common::read16(&stream_ptr);
 
             for (auto i = 0; i < num_streams; i++)
             {
                 if (strncmp((char*)stream_ptr + 8, "#~", 3) == 0)
                 {
-                    image_->heap_tables.data = base_metadata_ptr + common::read32(stream_ptr);
-                    image_->heap_tables.size = common::read32(stream_ptr + 4);
+                    image_->heap_tables.data = base_metadata_ptr + common::peek32(stream_ptr);
+                    image_->heap_tables.size = common::peek32(stream_ptr + 4);
                     stream_ptr += 8 + 3;
                 }
                 else if (strncmp((char*)stream_ptr + 8, "#Strings", 9) == 0)
                 {
-                    image_->heap_strings.data = base_metadata_ptr + common::read32(stream_ptr);
-                    image_->heap_strings.size = common::read32(stream_ptr + 4);
+                    image_->heap_strings.data = base_metadata_ptr + common::peek32(stream_ptr);
+                    image_->heap_strings.size = common::peek32(stream_ptr + 4);
                     stream_ptr += 8 + 9;
                 }
                 else if (strncmp((char*)stream_ptr + 8, "#US", 4) == 0)
                 {
-                    image_->heap_us.data = base_metadata_ptr + common::read32(stream_ptr);
-                    image_->heap_us.size = common::read32(stream_ptr + 4);
+                    image_->heap_us.data = base_metadata_ptr + common::peek32(stream_ptr);
+                    image_->heap_us.size = common::peek32(stream_ptr + 4);
                     stream_ptr += 8 + 4;
                 }
                 else if (strncmp((char*)stream_ptr + 8, "#Blob", 6) == 0)
                 {
-                    image_->heap_blob.data = base_metadata_ptr + common::read32(stream_ptr);
-                    image_->heap_blob.size = common::read32(stream_ptr + 4);
+                    image_->heap_blob.data = base_metadata_ptr + common::peek32(stream_ptr);
+                    image_->heap_blob.size = common::peek32(stream_ptr + 4);
                     stream_ptr += 8 + 6;
                 }
                 else if (strncmp((char*)stream_ptr + 8, "#GUID", 6) == 0)
                 {
-                    image_->heap_guid.data = base_metadata_ptr + common::read32(stream_ptr);
-                    image_->heap_guid.size = common::read32(stream_ptr + 4);
+                    image_->heap_guid.data = base_metadata_ptr + common::peek32(stream_ptr);
+                    image_->heap_guid.size = common::peek32(stream_ptr + 4);
                     stream_ptr += 8 + 6;
                 }
                 else if (strncmp((char*)stream_ptr + 8, "#Pdb", 5) == 0)
                 {
-                    image_->heap_pdb.data = base_metadata_ptr + common::read32(stream_ptr);
-                    image_->heap_pdb.size = common::read32(stream_ptr + 4);
+                    image_->heap_pdb.data = base_metadata_ptr + common::peek32(stream_ptr);
+                    image_->heap_pdb.size = common::peek32(stream_ptr + 4);
                     stream_ptr += 8 + 5;
                 }
                 else
@@ -308,7 +302,7 @@ namespace stereo {
                 }
                 else
                 {
-                    image_->tables[table].rows = common::read32((u8*)rows);
+                    image_->tables[table].rows = common::peek32((u8*)rows);
                 }
 
                 rows++;
