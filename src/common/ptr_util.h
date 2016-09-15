@@ -5,19 +5,19 @@
 namespace stereo {
     namespace common {
 
-        inline u16 peek16(const u8* ptr)
+        inline u16 peek16(u8* ptr)
         {
-            return *((u16*)ptr);
+            return *(reinterpret_cast<u16*>(ptr));
         }
 
-        inline u32 peek32(const u8* ptr)
+        inline u32 peek32(u8* ptr)
         {
-            return *((u32*)ptr);
+            return *(reinterpret_cast<u32*>(ptr));
         }
 
-        inline u64 peek64(const u8* ptr)
+        inline u64 peek64(u8* ptr)
         {
-            return *((u64*)ptr);
+            return *(reinterpret_cast<u64*>(ptr));
         }
 
         inline u8 read8(u8** ptr)

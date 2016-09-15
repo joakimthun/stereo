@@ -270,7 +270,7 @@ namespace stereo {
             }
 
             auto heap_tables_ptr_base = image_->heap_tables.data;
-            auto heap_tables_ptr = (u8*)heap_tables_ptr_base;
+            const auto heap_tables_ptr = heap_tables_ptr_base;
             auto cli_stream_info_size = static_cast<u32>(sizeof(CLIStreamInfo));
 
             read(&image_->cli_stream_info, cli_stream_info_size, heap_tables_ptr);
@@ -302,7 +302,7 @@ namespace stereo {
                 }
                 else
                 {
-                    image_->tables[table].rows = common::peek32((u8*)rows);
+                    image_->tables[table].rows = common::peek32(reinterpret_cast<u8*>(rows));
                 }
 
                 rows++;
@@ -310,7 +310,7 @@ namespace stereo {
             }
 
             auto tables_base_ptr = (heap_tables_ptr + cli_stream_info_size) + (4 * valid);
-            if (tables_base_ptr != (u8*)rows)
+            if (tables_base_ptr != reinterpret_cast<u8*>(rows))
             {
                 logger_->LogError(L"Offset mismatch when reading the number of rows in each table");
                 return false;
