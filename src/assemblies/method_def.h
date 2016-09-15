@@ -73,7 +73,7 @@ namespace stereo {
             u32 rva;
             MethodImplAttributes impl_attributes;
             MethodAttributes attributes;
-            std::string name;
+            std::wstring name;
             std::unique_ptr<MethodBody> body;
         };
 

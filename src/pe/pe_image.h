@@ -41,7 +41,7 @@ namespace stereo {
             CLIHeader cli_header;
             u16 md_version_major;
             u16 md_version_minor;
-            std::string md_version_string;
+            std::wstring md_version_string;
             StreamHeader heap_strings;
             StreamHeader heap_us;
             StreamHeader heap_blob;

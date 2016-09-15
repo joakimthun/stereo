@@ -4,6 +4,7 @@
 
 #include "../common/file_util.h"
 #include "../common/ptr_util.h"
+#include "../common/string_util.h"
 
 namespace stereo {
     namespace pe {
@@ -84,7 +85,7 @@ namespace stereo {
             // Validate DOS header
             if (dos_header.msdos_sig[0] != 0x4d || dos_header.msdos_sig[1] != 0x5a)
             {
-                logger_->LogError("Invalid DOS header");
+                logger_->LogError(L"Invalid DOS header");
                 return false;
             }
 
@@ -102,7 +103,7 @@ namespace stereo {
             // Validate PE/COFF header
             if (image_->pe_headers.pe_sig[0] != 0x50 || image_->pe_headers.pe_sig[1] != 0x45 || image_->pe_headers.pe_sig[2] != 0x00 || image_->pe_headers.pe_sig[3] != 0x00)
             {
-                logger_->LogError("Invalid PE Signature");
+                logger_->LogError(L"Invalid PE Signature");
                 return false;
             }
 
@@ -110,13 +111,13 @@ namespace stereo {
             {
                 if (image_->pe_headers.pe_file_header.opt_header_size != (sizeof(PEHeaders) - sizeof(PEFileHeader) - 4))
                 {
-                    logger_->LogError("Invalid header size");
+                    logger_->LogError(L"Invalid header size");
                     return false;
                 }
             }
             else
             {
-                logger_->LogError("PE32+ not yet supported");
+                logger_->LogError(L"PE32+ not yet supported");
                 return false;
             }
 
@@ -182,7 +183,7 @@ namespace stereo {
 
                 char buffer[255];
                 strncpy(buffer, (char*)metadata_ptr, version_string_len);
-                image_->md_version_string = std::string(buffer, version_string_len);
+                image_->md_version_string = common::utf8str_to_utf16wstr(std::string(buffer, version_string_len));
 
                 metadata_ptr += version_string_len;
 
@@ -192,7 +193,7 @@ namespace stereo {
             }
             else
             {
-                logger_->LogError("Invalid metadata");
+                logger_->LogError(L"Invalid metadata");
                 return read_result;
             }
 
@@ -254,7 +255,7 @@ namespace stereo {
                 }
                 else
                 {
-                    logger_->LogWarning("Unknown heap type");
+                    logger_->LogWarning(L"Unknown heap type");
                     stream_ptr += 8 + strlen((char*)stream_ptr + 8) + 1;
                 }
 
@@ -303,7 +304,7 @@ namespace stereo {
 
                 if (table > PEImage::MAX_NUM_METADATA_TABLES)
                 {
-                    logger_->LogWarning("PEImageReader::read_tables --> if (table > PEImage::MAX_NUM_METADATA_TABLES)");
+                    logger_->LogWarning(L"PEImageReader::read_tables --> if (table > PEImage::MAX_NUM_METADATA_TABLES)");
                 }
                 else
                 {
@@ -317,7 +318,7 @@ namespace stereo {
             auto tables_base_ptr = (heap_tables_ptr + cli_stream_info_size) + (4 * valid);
             if (tables_base_ptr != (u8*)rows)
             {
-                logger_->LogError("Offset mismatch when reading the number of rows in each table");
+                logger_->LogError(L"Offset mismatch when reading the number of rows in each table");
                 return false;
             }
 
@@ -475,7 +476,7 @@ namespace stereo {
                 break;
             }
 
-            logger_->LogError("PEImageReader::compute_metadata_row_size --> Unsupported MetaDataTable");
+            logger_->LogError(L"PEImageReader::compute_metadata_row_size --> Unsupported MetaDataTable");
             return 0;
         }
 

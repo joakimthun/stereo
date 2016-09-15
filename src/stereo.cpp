@@ -15,8 +15,8 @@ int main(int argc, char *argv[])
     exe_assembly->read_module();
     exe_assembly->read_method(ep);
 
-    logger.LogInfo("Module name -> " + exe_assembly->get_module()->name);
-    logger.LogInfo("Entry point name -> " + exe_assembly->get_methods()[0]->name);
+    logger.LogInfo(L"Module name -> " + exe_assembly->get_module()->name);
+    logger.LogInfo(L"Entry point name -> " + exe_assembly->get_methods()[0]->name);
 
 	return 0;
 }

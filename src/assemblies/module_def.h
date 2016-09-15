@@ -9,7 +9,7 @@ namespace stereo {
 
         struct ModuleDef
         {
-            std::string name;
+            std::wstring name;
         };
 
     }

@@ -138,6 +138,7 @@
     <ClInclude Include="common\file_util.h" />
     <ClInclude Include="common\ilogger.h" />
     <ClInclude Include="common\ptr_util.h" />
+    <ClInclude Include="common\string_util.h" />
     <ClInclude Include="common\typedef.h" />
     <ClInclude Include="pe\pe_image.h" />
     <ClInclude Include="pe\pe.h" />

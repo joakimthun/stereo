@@ -15,13 +15,13 @@ namespace stereo {
         class ILogger
         {
         public:
-            virtual void Log(LogLevel log_level, const std::string& message) = 0;
-            virtual void LogInfo(const std::string& message) = 0;
-            virtual void LogWarning(const std::string& message) = 0;
-            virtual void LogError(const std::string& message) = 0;
+            virtual void Log(LogLevel log_level, const std::wstring& message) = 0;
+            virtual void LogInfo(const std::wstring& message) = 0;
+            virtual void LogWarning(const std::wstring& message) = 0;
+            virtual void LogError(const std::wstring& message) = 0;
 
         protected:
-            static const std::string& get_log_level_name(LogLevel log_level);
+            static const std::wstring& get_log_level_name(LogLevel log_level);
         };
 
     }

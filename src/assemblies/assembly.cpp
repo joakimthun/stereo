@@ -99,7 +99,7 @@ namespace stereo {
             switch (static_cast<Opcodes>(opcode))
             {
             case Opcodes::Ldstr: {
-                logger_->LogInfo("ldstr");
+                logger_->LogInfo(L"ldstr");
                 auto operand = common::read32(method_body_ptr);
                 u32 index = operand & 0x00ffffff;
                 auto str = read_us_string(index);
@@ -110,37 +110,33 @@ namespace stereo {
             }
         }
 
-        std::string Assembly::read_us_string(u32 index)
+        std::wstring Assembly::read_us_string(u32 index)
         {
-            std::string value;
+            std::wstring value;
 
             if (index == 0)
                 return value;
 
-            auto string_ptr = image_->heap_us.data + index;
-            auto length = *string_ptr & 0xfffffffe;
-            string_ptr++;
+            auto str_ptr = image_->heap_us.data + index;
 
-            // TODO: Fix this according to II.24.2.4 #US and #Blob heaps
-            // and read is at utf-16, not every other byte.....
-            for (auto i = 0; i < length; i += 2)
-            {
-                value += (char)string_ptr[i];
-            }
+            // TODO: Implement according to II.24.2.4 #US and #Blob heaps
+            auto length = *str_ptr & 0xfffffffe;
+            str_ptr++;
 
-            return value;
+            return common::to_utf16wstr(str_ptr, length);
         }
 
-        std::string Assembly::read_string(u32 index)
+        std::wstring Assembly::read_string(u32 index)
         {
-            std::string value;
+            std::wstring value;
 
             if (index == 0)
                 return value;
 
             auto string_ptr = image_->heap_strings.data + index;
 
-            return std::string((char*)string_ptr);
+            auto utf8_str = std::string(reinterpret_cast<const char*>(string_ptr));
+            return common::utf8str_to_utf16wstr(utf8_str);
         }
 
         u32 Assembly::read_string_index(u8** index_ptr)

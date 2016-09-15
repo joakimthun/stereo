@@ -15,7 +15,7 @@ namespace stereo {
         struct Opcode
         {
             Opcodes code;
-            std::string name;
+            std::wstring name;
         };
 
     }
