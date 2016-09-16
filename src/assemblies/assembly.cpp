@@ -15,8 +15,8 @@ namespace stereo {
 
         u32 Assembly::get_entry_point()
         {
-            auto ept = image_->cli_header.entry_point_token;
-            return ept & 0x00ffffff;
+            auto ept = pe::MetadataToken(image_->cli_header.entry_point_token);
+            return ept.rid();
         }
 
         const ModuleDef * Assembly::get_module()
@@ -90,7 +90,7 @@ namespace stereo {
 
         void Assembly::read_method_body_instructions(MethodDef * method, u8* method_body_ptr)
         {
-            auto opcode = common::read8(&method_body_ptr);
+            auto opcode = *method_body_ptr;
             auto read = true;
 
             while (read)
@@ -99,15 +99,22 @@ namespace stereo {
                 {
                 case Opcodes::Ldstr: {
                     logger_->LogInfo(L"ldstr");
-                    auto operand = common::read32(&method_body_ptr);
+                    method_body_ptr++;
 
-                    u32 index = operand & 0x00ffffff;
-                    auto str = read_us_string(index);
+                    auto str_token = read_metadata_token(&method_body_ptr);
+                    auto is_str_token = str_token.type() == pe::MetadataTokenType::String;
+                    auto str = read_us_string(str_token.rid());
                     logger_->LogInfo(str);
                     break;
                 }
                 case Opcodes::Call: {
                     logger_->LogInfo(L"call");
+                    method_body_ptr++;
+
+                    auto token = read_metadata_token(&method_body_ptr);
+
+                    auto rid = token.rid();
+                    auto type = token.type();
 
                     // TODO: Break on ret
                     read = false;
@@ -165,6 +172,12 @@ namespace stereo {
             }
 
             return str_index;
+        }
+
+        pe::MetadataToken Assembly::read_metadata_token(u8** ptr)
+        {
+            auto value = common::read32(ptr);
+            return pe::MetadataToken(value);
         }
 
         u8* Assembly::get_table_row_ptr(pe::MetadataTable table_type, u32 rid)

@@ -8,6 +8,7 @@
 #include "../common/string_util.h"
 #include "../pe/pe.h"
 #include "../pe/pe_image.h"
+#include "../pe/metadata_token.h"
 #include "method_def.h"
 #include "module_def.h"
 
@@ -32,6 +33,8 @@ namespace stereo {
             std::wstring read_us_string(u32 index);
             std::wstring read_string(u32 index);
             u32 read_string_index(u8** index_ptr);
+            pe::MetadataToken read_metadata_token(u8** ptr);
+
             u8* get_table_row_ptr(pe::MetadataTable table_type, u32 rid);
             u8* get_method_body_ptr(u32 rva);
             u32 resolve_rva(u32 rva);
