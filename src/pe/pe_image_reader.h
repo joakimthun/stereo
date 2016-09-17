@@ -5,6 +5,7 @@
 #include "../common/console_logger.h"
 #include "../common/file_util.h"
 #include "pe_image.h"
+#include "coded_index.h"
 
 namespace stereo {
     namespace pe {

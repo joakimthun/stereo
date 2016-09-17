@@ -378,8 +378,8 @@ namespace stereo {
 
         u8 PEImageReader::get_coded_index_size(CodedIndexType type)
         {
-            // TODO: Need to check if it fits into 2 bytes, needs 4 bytes in bigger images
-            return 2;
+            auto info = pe::get_coded_index_info(type, image_->tables);
+            return info.size;
         }
 
         u32 PEImageReader::compute_metadata_row_size(MetadataTable table)

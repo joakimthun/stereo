@@ -67,24 +67,6 @@ namespace stereo {
             CustomDebugInformation = 0x37,
         };
 
-        enum class CodedIndexType : u8
-        {
-            TypeDefOrRef,
-            HasConstant,
-            HasCustomAttribute,
-            HasFieldMarshal,
-            HasDeclSecurity,
-            MemberRefParent,
-            HasSemantics,
-            MethodDefOrRef,
-            MemberForwarded,
-            Implementation,
-            CustomAttributeType,
-            ResolutionScope,
-            TypeOrMethodDef,
-            HasCustomDebugInformation,
-        };
-
 #pragma pack(push, 1)
 
         struct MSDOSHeader

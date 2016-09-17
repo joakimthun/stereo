@@ -2,6 +2,7 @@
 
 #include "../common/ptr_util.h"
 #include "opcodes.h"
+#include "../pe/coded_index.h"
 
 namespace stereo {
     namespace assemblies {

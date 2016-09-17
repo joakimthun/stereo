@@ -1,6 +1,9 @@
 #pragma once
 
+#include <vector>
+
 #include "../common/typedef.h"
+#include "pe.h"
 
 namespace stereo {
     namespace pe {
@@ -23,30 +26,14 @@ namespace stereo {
             TypeOrMethodDef
         };
 
-        inline u8 get_coded_index_size_in_bits(CodedIndexType type)
+        struct CodedIndexInfo
         {
-            switch (type)
-            {
-            case CodedIndexType::HasFieldMarshal:
-            case CodedIndexType::HasSemantics:
-            case CodedIndexType::MethodDefOrRef:
-            case CodedIndexType::MemberForwarded:
-            case CodedIndexType::TypeOrMethodDef: return 1;
+            u8 size;
+            u8 num_bits;
+            std::vector<MetadataTable> tables;
+        };
 
-            case CodedIndexType::TypeDefOrRef:
-            case CodedIndexType::HasConstant:
-            case CodedIndexType::HasDeclSecurity:
-            case CodedIndexType::Implementation:
-            case CodedIndexType::ResolutionScope:
-
-            case CodedIndexType::MemberRefParent:
-            case CodedIndexType::CustomAttributeType: return 3;
-
-            case CodedIndexType::HasCustomAttribute: return 5;
-            default:
-                return 0;
-            }
-        }
+        CodedIndexInfo get_coded_index_info(CodedIndexType type, const TableInfo* tables);
 
     }
 }

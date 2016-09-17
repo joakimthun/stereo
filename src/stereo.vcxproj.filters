@@ -80,5 +80,8 @@
     <ClCompile Include="assemblies\assembly.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="pe\coded_index.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
