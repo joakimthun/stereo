@@ -67,6 +67,7 @@ namespace stereo {
             auto table_row_ptr = get_table_row_ptr(pe::MetadataTable::MemberRef, rid);
 
             auto token = read_metadata_token(&table_row_ptr, pe::CodedIndexType::MemberRefParent);
+            auto name = read_string(&table_row_ptr);
         }
 
         void Assembly::read_method_body(MethodDef* method)
@@ -182,6 +183,14 @@ namespace stereo {
             }
 
             return str_index;
+        }
+
+        u32 Assembly::read_blob_index(u8 ** index_ptr)
+        {
+            if (image_->blob_idx_size == 2)
+                return ptrutil::read16(index_ptr);
+
+            return ptrutil::read32(index_ptr);
         }
 
         pe::MetadataToken Assembly::read_metadata_token(u8** ptr)

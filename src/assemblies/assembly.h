@@ -35,6 +35,7 @@ namespace stereo {
             std::wstring read_us_string(u32 index);
             std::wstring read_string(u8** index_ptr);
             u32 read_string_index(u8** index_ptr);
+            u32 read_blob_index(u8** index_ptr);
             pe::MetadataToken read_metadata_token(u8** ptr);
             pe::MetadataToken read_metadata_token(u8** ptr, pe::CodedIndexType index_type);
 
