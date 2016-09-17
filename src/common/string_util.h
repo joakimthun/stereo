@@ -17,7 +17,7 @@ namespace stereo {
 
         inline std::wstring to_utf16wstr(const u8* bytes, u32 length)
         {
-            return std::wstring(reinterpret_cast<const wchar*>(bytes), length / 2);
+            return std::wstring(reinterpret_cast<const wchar*>(bytes), length / sizeof(wchar));
         }
 
     }
