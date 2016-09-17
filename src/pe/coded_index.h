@@ -4,6 +4,7 @@
 
 #include "../common/typedef.h"
 #include "pe.h"
+#include "metadata_token.h"
 
 namespace stereo {
     namespace pe {
@@ -28,12 +29,15 @@ namespace stereo {
 
         struct CodedIndexInfo
         {
+            CodedIndexType type;
             u8 size;
             u8 num_bits;
+            u8 table_mask;
             std::vector<MetadataTable> tables;
         };
 
         CodedIndexInfo get_coded_index_info(CodedIndexType type, const TableInfo* tables);
+        MetadataToken get_metadata_token_from_coded_index(const CodedIndexInfo& index_info, u32 token);
 
     }
 }

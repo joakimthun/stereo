@@ -5,7 +5,7 @@
 #include "typedef.h"
 
 namespace stereo {
-    namespace common {
+    namespace byteswap {
 
         u16 byteswap16(u16 value)
         {

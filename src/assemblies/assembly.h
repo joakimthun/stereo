@@ -9,6 +9,7 @@
 #include "../pe/pe.h"
 #include "../pe/pe_image.h"
 #include "../pe/metadata_token.h"
+#include "../pe/coded_index.h"
 #include "method_def.h"
 #include "module_def.h"
 
@@ -26,14 +27,16 @@ namespace stereo {
 
             void read_module();
             void read_method(u32 rid);
+            void read_member_ref(u32 rid);
 
         private:
             void read_method_body(MethodDef* method);
             void read_method_body_instructions(MethodDef* method, u8* method_body_ptr);
             std::wstring read_us_string(u32 index);
-            std::wstring read_string(u32 index);
+            std::wstring read_string(u8** index_ptr);
             u32 read_string_index(u8** index_ptr);
             pe::MetadataToken read_metadata_token(u8** ptr);
+            pe::MetadataToken read_metadata_token(u8** ptr, pe::CodedIndexType index_type);
 
             u8* get_table_row_ptr(pe::MetadataTable table_type, u32 rid);
             u8* get_method_body_ptr(u32 rva);

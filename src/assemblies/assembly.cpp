@@ -37,8 +37,7 @@ namespace stereo {
             auto table_row_ptr = get_table_row_ptr(pe::MetadataTable::Module, 1);
             table_row_ptr += 2; // Skip the generation column since it's always zero
 
-            auto name_string_index = read_string_index(&table_row_ptr);
-            module_->name = read_string(name_string_index);
+            module_->name = read_string(&table_row_ptr);
 
             // TODO: Read the mvid guid
         }
@@ -54,14 +53,20 @@ namespace stereo {
 
             method->attributes = static_cast<MethodAttributes>(ptrutil::read16(&table_row_ptr));
 
-            auto name_string_index = read_string_index(&table_row_ptr);
-            method->name = read_string(name_string_index);
+            method->name = read_string(&table_row_ptr);
 
             // TODO: Read signature, parameters etc
 
             read_method_body(method.get());
 
             methods_.push_back(std::move(method));
+        }
+
+        void Assembly::read_member_ref(u32 rid)
+        {
+            auto table_row_ptr = get_table_row_ptr(pe::MetadataTable::MemberRef, rid);
+
+            auto token = read_metadata_token(&table_row_ptr, pe::CodedIndexType::MemberRefParent);
         }
 
         void Assembly::read_method_body(MethodDef* method)
@@ -117,6 +122,8 @@ namespace stereo {
                     auto rid = token.rid();
                     auto type = token.type();
 
+                    read_member_ref(rid);
+
                     // TODO: Break on ret
                     read = false;
                     break;
@@ -145,8 +152,10 @@ namespace stereo {
             return strutil::to_utf16wstr(str_ptr, length);
         }
 
-        std::wstring Assembly::read_string(u32 index)
+        std::wstring Assembly::read_string(u8** index_ptr)
         {
+            auto index = read_string_index(index_ptr);
+
             std::wstring value;
 
             if (index == 0)
@@ -179,6 +188,18 @@ namespace stereo {
         {
             auto value = ptrutil::read32(ptr);
             return pe::MetadataToken(value);
+        }
+
+        pe::MetadataToken Assembly::read_metadata_token(u8** ptr, pe::CodedIndexType index_type)
+        {
+            auto coded_index_info = pe::get_coded_index_info(index_type, image_->tables);
+            u32 token;
+            if (coded_index_info.size == 2)
+                token = ptrutil::read16(ptr);
+            else
+                token = ptrutil::read32(ptr);
+
+            return pe::get_metadata_token_from_coded_index(coded_index_info, token);
         }
 
         u8* Assembly::get_table_row_ptr(pe::MetadataTable table_type, u32 rid)
