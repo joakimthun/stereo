@@ -54,13 +54,13 @@
     <ClInclude Include="assemblies\opcodes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\string_util.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="pe\metadata_token.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pe\coded_index.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\str_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

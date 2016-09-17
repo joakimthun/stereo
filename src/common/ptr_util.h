@@ -3,7 +3,7 @@
 #include "typedef.h"
 
 namespace stereo {
-    namespace common {
+    namespace ptrutil {
 
         inline u16 peek16(u8* ptr)
         {

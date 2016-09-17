@@ -3,7 +3,7 @@
 #include <string>
 
 namespace stereo {
-    namespace common {
+    namespace logging {
 
         enum class LogLevel
         {

@@ -5,7 +5,7 @@
 
 #include "../common/typedef.h"
 #include "../common/console_logger.h"
-#include "../common/string_util.h"
+#include "../common/str_util.h"
 #include "../pe/pe.h"
 #include "../pe/pe_image.h"
 #include "../pe/metadata_token.h"
@@ -40,7 +40,7 @@ namespace stereo {
             u32 resolve_rva(u32 rva);
             const pe::SectionTable* resolve_rva_section(u32 rva);
 
-            std::unique_ptr<common::ILogger> logger_;
+            std::unique_ptr<logging::ILogger> logger_;
             const pe::PEImage* image_;
             std::unique_ptr<ModuleDef> module_;
             std::vector<std::unique_ptr<MethodDef>> methods_;

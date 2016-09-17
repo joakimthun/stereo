@@ -7,7 +7,7 @@
 #include "typedef.h"
 
 namespace stereo {
-    namespace common {
+    namespace strutil {
 
         inline std::wstring utf8str_to_utf16wstr(const std::string& bytes)
         {

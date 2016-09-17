@@ -6,7 +6,7 @@
 #include "typedef.h"
 
 namespace stereo {
-    namespace common {
+    namespace fileutil {
 
         struct FileContent
         {

@@ -3,7 +3,7 @@
 #include "ilogger.h"
 
 namespace stereo {
-    namespace common {
+    namespace logging {
 
         class ConsoleLogger : public ILogger
         {

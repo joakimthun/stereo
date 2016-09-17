@@ -41,7 +41,7 @@ namespace stereo {
             u8 get_coded_index_size(CodedIndexType type);
             u32 compute_metadata_row_size(MetadataTable table);
 
-            std::unique_ptr<common::ILogger> logger_;
+            std::unique_ptr<logging::ILogger> logger_;
             std::unique_ptr<PEImage> image_;
             u64 current_offset_;
             const SectionTable* text_section_;

@@ -3,7 +3,7 @@
 #include "ilogger.h"
 
 namespace stereo {
-    namespace common {
+    namespace logging {
 
         static std::wstring log_level_names[] = {
             L"Info",

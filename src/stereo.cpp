@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[])
 {
-    auto logger = stereo::common::ConsoleLogger();
+    auto logger = stereo::logging::ConsoleLogger();
 
 	auto exe_reader = stereo::pe::PEImageReader::load_image("../test_files/ConsoleApplication_Any.exe");
     //auto dll_reader = stereo::pe::PEImageReader::load_image("../test_files/ClassLibrary1.dll");

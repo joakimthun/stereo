@@ -8,7 +8,7 @@ namespace stereo {
 
         Assembly::Assembly(const pe::PEImage* image)
             :
-            logger_(std::make_unique<common::ConsoleLogger>()),
+            logger_(std::make_unique<logging::ConsoleLogger>()),
             image_(image)
         {
         }
@@ -47,11 +47,11 @@ namespace stereo {
             auto table_row_ptr = get_table_row_ptr(pe::MetadataTable::Method, rid);
             auto method = std::make_unique<MethodDef>();
 
-            method->rva = common::read32(&table_row_ptr);
+            method->rva = ptrutil::read32(&table_row_ptr);
 
-            method->impl_attributes = static_cast<MethodImplAttributes>(common::read16(&table_row_ptr));
+            method->impl_attributes = static_cast<MethodImplAttributes>(ptrutil::read16(&table_row_ptr));
 
-            method->attributes = static_cast<MethodAttributes>(common::read16(&table_row_ptr));
+            method->attributes = static_cast<MethodAttributes>(ptrutil::read16(&table_row_ptr));
 
             auto name_string_index = read_string_index(&table_row_ptr);
             method->name = read_string(name_string_index);
@@ -141,7 +141,7 @@ namespace stereo {
             auto length = *str_ptr & 0xfffffffe;
             str_ptr++;
 
-            return common::to_utf16wstr(str_ptr, length);
+            return strutil::to_utf16wstr(str_ptr, length);
         }
 
         std::wstring Assembly::read_string(u32 index)
@@ -154,7 +154,7 @@ namespace stereo {
             auto string_ptr = image_->heap_strings.data + index;
 
             auto utf8_str = std::string(reinterpret_cast<const char*>(string_ptr));
-            return common::utf8str_to_utf16wstr(utf8_str);
+            return strutil::utf8str_to_utf16wstr(utf8_str);
         }
 
         u32 Assembly::read_string_index(u8** index_ptr)
@@ -164,11 +164,11 @@ namespace stereo {
             u32 str_index = 0;
             if (index_size == 2)
             {
-                str_index = common::read16(index_ptr);
+                str_index = ptrutil::read16(index_ptr);
             }
             else
             {
-                str_index = common::read32(index_ptr);
+                str_index = ptrutil::read32(index_ptr);
             }
 
             return str_index;
@@ -176,7 +176,7 @@ namespace stereo {
 
         pe::MetadataToken Assembly::read_metadata_token(u8** ptr)
         {
-            auto value = common::read32(ptr);
+            auto value = ptrutil::read32(ptr);
             return pe::MetadataToken(value);
         }
 

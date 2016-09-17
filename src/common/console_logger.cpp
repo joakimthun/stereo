@@ -5,7 +5,7 @@
 #include "console_logger.h"
 
 namespace stereo {
-    namespace common {
+    namespace logging {
 
         void ConsoleLogger::Log(LogLevel log_level, const std::wstring& message)
         {
