@@ -8,6 +8,7 @@
 #include "module_def.h"
 #include "method_def.h"
 #include "type_ref.h"
+#include "assembly_ref.h"
 
 namespace stereo {
     namespace assemblies {
@@ -24,9 +25,6 @@ namespace stereo {
 
         private:
             std::unique_ptr<AssemblyReader> reader_;
-            std::unique_ptr<ModuleDef> module_;
-            std::vector<std::unique_ptr<MethodDef>> method_defs_;
-            std::vector<std::unique_ptr<TypeRef>> type_refs_;
         };
 
     }

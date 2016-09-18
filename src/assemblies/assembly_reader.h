@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+#include <functional>
 
 #include "../common/typedef.h"
 #include "../common/console_logger.h"
@@ -14,6 +15,7 @@
 #include "module_def.h"
 #include "type_ref.h"
 #include "member_ref.h"
+#include "assembly_ref.h"
 
 namespace stereo {
     namespace assemblies {
@@ -23,17 +25,16 @@ namespace stereo {
         class AssemblyReader
         {
         public: 
-            AssemblyReader(const char* file_path, Assembly* assembly);
+            AssemblyReader(const char* file_path);
 
             u32 get_entry_point();
-            u32 get_num_entries(pe::MetadataTable table);
-            std::unique_ptr<ModuleDef> read_module_def();
-            std::unique_ptr <MethodDef> read_method_def(u32 rid);
-            std::unique_ptr<MemberRef> read_member_ref(u32 rid);
-            std::unique_ptr<TypeRef> read_type_ref(u32 rid);
+            const ModuleDef* read_module_def();
+            const MethodDef* read_method_def(u32 rid);
+            const MemberRef* read_member_ref(u32 rid);
+            const TypeRef* read_type_ref(u32 rid);
+            const AssemblyRef* read_assembly_ref(u32 rid);
 
         private:
-            Assembly* assembly_;
             void read_method_body(MethodDef* method);
             void read_method_body_instructions(MethodDef* method, u8* method_body_ptr);
             std::wstring read_us_string(u32 index);
@@ -47,9 +48,31 @@ namespace stereo {
             u8* get_method_body_ptr(u32 rva);
             u32 resolve_rva(u32 rva);
             const pe::SectionTable* resolve_rva_section(u32 rva);
+            u32 get_num_entries(pe::MetadataTable table);
+            u32 get_index_from_rid(u32 rid);
+
+            template<typename T>
+            inline bool already_read(std::vector<std::unique_ptr<T>>& vec, u32 rid)
+            {
+                return vec.size() != 0 && vec[get_index_from_rid(rid)] != nullptr;
+            }
+
+            template<typename T>
+            inline void resize_if_needed(std::vector<std::unique_ptr<T>>& vec, pe::MetadataTable table)
+            {
+                if (vec.size() != 0)
+                    return;
+
+                vec.resize(get_num_entries(table));
+            }
 
             std::unique_ptr<logging::ILogger> logger_;
             std::unique_ptr<pe::PEImage> image_;
+            std::unique_ptr<ModuleDef> module_;
+            std::vector<std::unique_ptr<AssemblyRef>> assembly_refs_;
+            std::vector<std::unique_ptr<MemberRef>> member_refs_;
+            std::vector<std::unique_ptr<MethodDef>> method_defs_;
+            std::vector<std::unique_ptr<TypeRef>> type_refs_;
         };
 
     }

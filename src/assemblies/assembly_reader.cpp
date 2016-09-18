@@ -4,13 +4,13 @@
 #include "opcodes.h"
 #include "../pe/coded_index.h"
 #include "../pe/pe_image_reader.h"
+#include "assembly.h"
 
 namespace stereo {
     namespace assemblies {
 
-        AssemblyReader::AssemblyReader(const char* file_path, Assembly* assembly)
+        AssemblyReader::AssemblyReader(const char* file_path)
             :
-            assembly_(assembly),
             logger_(std::make_unique<logging::ConsoleLogger>()),
             image_(pe::PEImageReader::load_image(file_path))
         {
@@ -22,28 +22,33 @@ namespace stereo {
             return ept.rid();
         }
 
-        u32 AssemblyReader::get_num_entries(pe::MetadataTable table)
+        const ModuleDef* AssemblyReader::read_module_def()
         {
-            auto table_info = image_->tables[static_cast<int>(table)];
-            return table_info.rows;
-        }
+            if (module_ != nullptr)
+                return module_.get();
 
-        std::unique_ptr<ModuleDef> AssemblyReader::read_module_def()
-        {
             auto module = std::make_unique<ModuleDef>();
 
             auto table_row_ptr = get_table_row_ptr(pe::MetadataTable::Module, 1);
-            table_row_ptr += 2; // Skip the generation column since it's always zero
+
+            // Skip the generation column since it's always zero
+            table_row_ptr += 2; 
 
             module->name = read_string(&table_row_ptr);
 
             // TODO: Read the mvid guid
 
-            return module;
+            module_ = std::move(module);
+            return module_.get();
         }
 
-        std::unique_ptr<MethodDef> AssemblyReader::read_method_def(u32 rid)
+        const MethodDef* AssemblyReader::read_method_def(u32 rid)
         {
+            if (already_read(method_defs_, rid))
+                return method_defs_[get_index_from_rid(rid)].get();
+
+            resize_if_needed(method_defs_, pe::MetadataTable::Method);
+
             auto table_row_ptr = get_table_row_ptr(pe::MetadataTable::Method, rid);
             auto method_def = std::make_unique<MethodDef>();
 
@@ -63,11 +68,17 @@ namespace stereo {
 
             read_method_body(method_def.get());
 
-            return method_def;
+            method_defs_[get_index_from_rid(rid)] = std::move(method_def);
+            return method_defs_[get_index_from_rid(rid)].get();
         }
 
-        std::unique_ptr<MemberRef> AssemblyReader::read_member_ref(u32 rid)
+        const MemberRef* AssemblyReader::read_member_ref(u32 rid)
         {
+            if (already_read(member_refs_, rid))
+                return member_refs_[get_index_from_rid(rid)].get();
+
+            resize_if_needed(member_refs_, pe::MetadataTable::MemberRef);
+
             auto table_row_ptr = get_table_row_ptr(pe::MetadataTable::MemberRef, rid);
 
             // Class (an index into the MethodDef, ModuleRef, TypeDef, TypeRef, or TypeSpec tables; more precisely, a MemberRefParent(§II.24.2.6) coded index)
@@ -83,7 +94,49 @@ namespace stereo {
             if (token.type() == pe::MetadataTokenType::TypeRef)
                 read_type_ref(token.rid());
 
-            return std::make_unique<MemberRef>(name);
+            member_refs_[get_index_from_rid(rid)] = std::move(std::make_unique<MemberRef>(name));
+            return member_refs_[get_index_from_rid(rid)].get();
+        }
+
+        const TypeRef* AssemblyReader::read_type_ref(u32 rid)
+        {
+            if (already_read(type_refs_, rid))
+                return type_refs_[get_index_from_rid(rid)].get();
+
+            resize_if_needed(type_refs_, pe::MetadataTable::TypeRef);
+
+            auto table_row_ptr = get_table_row_ptr(pe::MetadataTable::TypeRef, rid);
+
+            //ResolutionScope (an index into a Module, ModuleRef, AssemblyRef or TypeRef table, or null; more precisely, a ResolutionScope(§II.24.2.6) coded index)
+            auto res_scope = read_metadata_token(&table_row_ptr, pe::CodedIndexType::ResolutionScope);
+
+            // TypeName(an index into the String heap)
+            auto name = read_string(&table_row_ptr);
+
+            // TypeNamespace(an index into the String heap)
+            auto name_space = read_string(&table_row_ptr);
+
+            if (res_scope.type() == pe::MetadataTokenType::AssemblyRef)
+            {
+                read_assembly_ref(res_scope.rid());
+            }
+            else
+            {
+                throw "read_type_ref -> unsupported ResolutionScope type";
+            }
+
+            type_refs_[get_index_from_rid(rid)] = std::make_unique<TypeRef>(name, name_space);
+            return type_refs_[get_index_from_rid(rid)].get();
+        }
+
+        const AssemblyRef* AssemblyReader::read_assembly_ref(u32 rid)
+        {
+            if (already_read(assembly_refs_, rid))
+                return assembly_refs_[get_index_from_rid(rid)].get();
+
+            resize_if_needed(assembly_refs_, pe::MetadataTable::AssemblyRef);
+
+            return nullptr;
         }
 
         void AssemblyReader::read_method_body(MethodDef* method)
@@ -151,31 +204,6 @@ namespace stereo {
 
                 opcode = *method_body_ptr;
             }
-        }
-
-        std::unique_ptr<TypeRef> AssemblyReader::read_type_ref(u32 rid)
-        {
-            auto table_row_ptr = get_table_row_ptr(pe::MetadataTable::TypeRef, rid);
-
-            //ResolutionScope (an index into a Module, ModuleRef, AssemblyRef or TypeRef table, or null; more precisely, a ResolutionScope(§II.24.2.6) coded index)
-            auto res_scope = read_metadata_token(&table_row_ptr, pe::CodedIndexType::ResolutionScope);
-
-            // TypeName(an index into the String heap)
-            auto name = read_string(&table_row_ptr);
-
-            // TypeNamespace(an index into the String heap)
-            auto name_space = read_string(&table_row_ptr);
-
-            if (res_scope.type() == pe::MetadataTokenType::AssemblyRef)
-            {
-
-            }
-            else
-            {
-                throw "read_type_ref -> unsupported ResolutionScope type";
-            }
-
-            return std::make_unique<TypeRef>(name, name_space);
         }
 
         std::wstring AssemblyReader::read_us_string(u32 index)
@@ -281,6 +309,17 @@ namespace stereo {
             }
 
             return nullptr;
+        }
+
+        u32 AssemblyReader::get_num_entries(pe::MetadataTable table)
+        {
+            auto table_info = image_->tables[static_cast<int>(table)];
+            return table_info.rows;
+        }
+
+        u32 AssemblyReader::get_index_from_rid(u32 rid)
+        {
+            return rid - 1;
         }
     }
 }

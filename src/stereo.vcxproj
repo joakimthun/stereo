@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClInclude Include="assemblies\assembly.h" />
     <ClInclude Include="assemblies\assembly_reader.h" />
+    <ClInclude Include="assemblies\assembly_ref.h" />
     <ClInclude Include="assemblies\member_ref.h" />
     <ClInclude Include="assemblies\method_def.h" />
     <ClInclude Include="assemblies\module_def.h" />
