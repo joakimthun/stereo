@@ -46,7 +46,7 @@ namespace stereo {
         struct MetadataToken
         {
             MetadataToken(u32 val) : value(val) {}
-            MetadataToken(MetadataTokenType token_type, u32 rid) : value(static_cast<u32>(token_type) | rid) {}
+            MetadataToken(MetadataTokenType token_type, u32 rid) : value((static_cast<u32>(token_type) << 24) | rid) {}
 
             u32 value;
 

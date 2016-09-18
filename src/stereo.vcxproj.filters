@@ -39,9 +39,6 @@
     <ClInclude Include="pe\pe_image_reader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="assemblies\assembly.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="assemblies\method_def.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -63,6 +60,18 @@
     <ClInclude Include="common\str_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="assemblies\type_ref.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="assemblies\assembly_reader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="assemblies\assembly.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="assemblies\member_ref.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stereo.cpp">
@@ -77,10 +86,13 @@
     <ClCompile Include="pe\pe_image_reader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="assemblies\assembly.cpp">
+    <ClCompile Include="pe\coded_index.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="pe\coded_index.cpp">
+    <ClCompile Include="assemblies\assembly_reader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="assemblies\assembly.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

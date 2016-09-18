@@ -6,17 +6,16 @@ int main(int argc, char *argv[])
 {
     auto logger = stereo::logging::ConsoleLogger();
 
-	auto exe_reader = stereo::pe::PEImageReader::load_image("../test_files/ConsoleApplication_Any.exe");
-    //auto dll_reader = stereo::pe::PEImageReader::load_image("../test_files/ClassLibrary1.dll");
+    auto exe_assembly = std::make_unique<stereo::assemblies::Assembly>("../test_files/ConsoleApplication_Any.exe");
+    //auto dll_assembly = std::make_unique<stereo::assemblies::Assembly>("../test_files/ClassLibrary1.dll");
 
-    auto exe_assembly = std::make_unique<stereo::assemblies::Assembly>(exe_reader.get());
     auto ep = exe_assembly->get_entry_point();
-
-    exe_assembly->read_module();
-    exe_assembly->read_method(ep);
-
-    logger.LogInfo(L"Module name -> " + exe_assembly->get_module()->name);
-    logger.LogInfo(L"Entry point name -> " + exe_assembly->get_methods()[0]->name);
+    
+    auto module_def = exe_assembly->get_module_def();
+    auto method_def = exe_assembly->get_method_def(ep);
+    
+    logger.LogInfo(L"Module name -> " + module_def->name);
+    logger.LogInfo(L"Entry point name -> " + method_def->name);
 
 	return 0;
 }
