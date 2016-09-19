@@ -1,5 +1,7 @@
 #include "assembly_reader.h"
 
+#include <cstring>
+
 #include "../common/ptr_util.h"
 #include "opcodes.h"
 #include "../pe/coded_index.h"
@@ -32,7 +34,7 @@ namespace stereo {
             auto table_row_ptr = get_table_row_ptr(pe::MetadataTable::Module, 1);
 
             // Skip the generation column since it's always zero
-            table_row_ptr += 2; 
+            table_row_ptr += 2;
 
             module->name = read_string(&table_row_ptr);
 
@@ -132,11 +134,47 @@ namespace stereo {
         const AssemblyRef* AssemblyReader::read_assembly_ref(u32 rid)
         {
             if (already_read(assembly_refs_, rid))
+            {
                 return assembly_refs_[get_index_from_rid(rid)].get();
+            }
 
             resize_if_needed(assembly_refs_, pe::MetadataTable::AssemblyRef);
 
-            return nullptr;
+            auto table_row_ptr = get_table_row_ptr(pe::MetadataTable::AssemblyRef, rid);
+
+            auto asm_ref = std::make_unique<AssemblyRef>();
+
+            // MajorVersion, MinorVersion, BuildNumber, RevisionNumber (each being 2-byte constants)
+            asm_ref->major_version = ptrutil::read16(&table_row_ptr);
+            asm_ref->minor_version = ptrutil::read16(&table_row_ptr);
+            asm_ref->build_number = ptrutil::read16(&table_row_ptr);
+            asm_ref->revision_number = ptrutil::read16(&table_row_ptr);
+
+            auto flags = ptrutil::read32(&table_row_ptr);
+
+            auto key_or_token_blob = read_blob(&table_row_ptr);
+            
+            //PublicKeyOrToken (an index into the Blob heap, indicating the public key or token that identifies the author of this Assembly)
+            if ((static_cast<u32>(asm_ref->flags) & static_cast<u32>(AssemblyFlags::PublicKey)) != 0)
+            {
+                asm_ref->public_key = std::move(key_or_token_blob);
+            }
+            else
+            {
+                asm_ref->token = std::move(key_or_token_blob);
+            }
+
+            // Name (an index into the String heap)
+            asm_ref->name = read_string(&table_row_ptr);
+
+            // Culture (an index into the String heap) 
+            asm_ref->culture = read_string(&table_row_ptr);
+
+            // HashValue (an index into the Blob heap)
+            asm_ref->hash_value = read_blob(&table_row_ptr);
+
+            assembly_refs_[get_index_from_rid(rid)] = std::move(asm_ref);
+            return assembly_refs_[get_index_from_rid(rid)].get();
         }
 
         void AssemblyReader::read_method_body(MethodDef* method)
@@ -178,7 +216,6 @@ namespace stereo {
                     method_body_ptr++;
 
                     auto str_token = read_metadata_token(&method_body_ptr);
-                    auto is_str_token = str_token.type() == pe::MetadataTokenType::String;
                     auto str = read_us_string(str_token.rid());
                     logger_->LogInfo(str);
                     break;
@@ -215,9 +252,8 @@ namespace stereo {
 
             auto str_ptr = image_->heap_us.data + index;
 
-            // TODO: Implement according to II.24.2.4 #US and #Blob heaps
-            auto length = *str_ptr & 0xfffffffe;
-            str_ptr++;
+            // II.24.2.4 #US and #Blob heaps
+            auto length = read_us_or_blob_length(&str_ptr) & 0xfffffffe;
 
             return strutil::to_utf16wstr(str_ptr, length);
         }
@@ -254,12 +290,24 @@ namespace stereo {
             return str_index;
         }
 
-        u32 AssemblyReader::read_blob_index(u8 ** index_ptr)
+        u32 AssemblyReader::read_blob_index(u8** index_ptr)
         {
             if (image_->blob_idx_size == 2)
                 return ptrutil::read16(index_ptr);
 
             return ptrutil::read32(index_ptr);
+        }
+
+        std::unique_ptr<BlobEntry> AssemblyReader::read_blob(u8** index_ptr)
+        {
+            auto index = read_blob_index(index_ptr);
+            auto blob_ptr = image_->heap_blob.data + index;
+            auto length = read_us_or_blob_length(&blob_ptr);
+
+            auto buffer = new u8[length];
+            std::memcpy(buffer, blob_ptr, length);
+
+            return std::make_unique<BlobEntry>(buffer, length);
         }
 
         pe::MetadataToken AssemblyReader::read_metadata_token(u8** ptr)
@@ -292,6 +340,35 @@ namespace stereo {
         u8* AssemblyReader::get_method_body_ptr(u32 rva)
         {
             return const_cast<u8*>(image_->raw_data) + resolve_rva(rva);
+        }
+
+        u32 AssemblyReader::read_us_or_blob_length(const u8** blob_ptr)
+        {
+            u32 length;
+            auto ptr = *blob_ptr;
+
+            // II.24.2.4 #US and #Blob heaps
+            if ((ptr[0] & 0x80) == 0)
+            {
+                *blob_ptr += 1;
+                length = ptr[0];
+            }
+            else if ((ptr[0] & 0x40) == 0)
+            {
+                *blob_ptr += 2;
+                length = (u32)(ptr[0] & ~0x80) << 8;
+                length |= ptr[1];
+            }
+            else
+            {
+                *blob_ptr += 4;
+                length = (u32)(ptr[0] & ~0xc0) << 24;
+                length |= (u32)ptr[1] << 16;
+                length |= (u32)ptr[2] << 8;
+                length |= (u32)ptr[3];
+            }
+
+            return length;
         }
 
         u32 AssemblyReader::resolve_rva(u32 rva)
