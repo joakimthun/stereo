@@ -109,25 +109,27 @@ namespace stereo {
 
             auto table_row_ptr = get_table_row_ptr(pe::MetadataTable::TypeRef, rid);
 
-            //ResolutionScope (an index into a Module, ModuleRef, AssemblyRef or TypeRef table, or null; more precisely, a ResolutionScope(§II.24.2.6) coded index)
+            auto type_ref = std::make_unique<TypeRef>();
+
+            // ResolutionScope (an index into a Module, ModuleRef, AssemblyRef or TypeRef table, or null; more precisely, a ResolutionScope(§II.24.2.6) coded index)
             auto res_scope = read_metadata_token(&table_row_ptr, pe::CodedIndexType::ResolutionScope);
-
-            // TypeName(an index into the String heap)
-            auto name = read_string(&table_row_ptr);
-
-            // TypeNamespace(an index into the String heap)
-            auto name_space = read_string(&table_row_ptr);
 
             if (res_scope.type() == pe::MetadataTokenType::AssemblyRef)
             {
-                read_assembly_ref(res_scope.rid());
+                type_ref->resolution_scope = read_assembly_ref(res_scope.rid());
             }
             else
             {
                 throw "read_type_ref -> unsupported ResolutionScope type";
             }
 
-            type_refs_[get_index_from_rid(rid)] = std::make_unique<TypeRef>(name, name_space);
+            // TypeName(an index into the String heap)
+            type_ref->name = read_string(&table_row_ptr);
+
+            // TypeNamespace(an index into the String heap)
+            type_ref->name_space = read_string(&table_row_ptr);
+
+            type_refs_[get_index_from_rid(rid)] = std::make_unique<TypeRef>();
             return type_refs_[get_index_from_rid(rid)].get();
         }
 

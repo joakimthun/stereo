@@ -139,6 +139,7 @@
     <ClInclude Include="assemblies\method_def.h" />
     <ClInclude Include="assemblies\module_def.h" />
     <ClInclude Include="assemblies\opcodes.h" />
+    <ClInclude Include="assemblies\resolution_scope.h" />
     <ClInclude Include="assemblies\type_ref.h" />
     <ClInclude Include="common\byteswap.h" />
     <ClInclude Include="common\console_logger.h" />

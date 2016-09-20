@@ -4,6 +4,7 @@
 
 #include "../common/typedef.h"
 #include "blob_entry.h"
+#include "resolution_scope.h"
 
 namespace stereo {
     namespace assemblies {
@@ -18,7 +19,7 @@ namespace stereo {
             EnableJITCompileTracking = 0x8000
         };
 
-        struct AssemblyRef
+        struct AssemblyRef : public IResolutionScope
         {
             u16 major_version;
             u16 minor_version;
