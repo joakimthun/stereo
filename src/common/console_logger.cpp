@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "console_logger.h"
+#include "str_util.h"
 
 namespace stereo {
     namespace logging {
@@ -26,6 +27,11 @@ namespace stereo {
         void ConsoleLogger::LogError(const std::wstring& message)
         {
             Log(LogLevel::Error, message);
+        }
+
+        void ConsoleLogger::LogError(const std::string& message)
+        {
+            Log(LogLevel::Error, strutil::utf8str_to_utf16wstr(message));
         }
 
         void ConsoleLogger::write(const std::wstring& log_level, const std::wstring& message)

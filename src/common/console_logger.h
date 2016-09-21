@@ -12,6 +12,7 @@ namespace stereo {
             void LogInfo(const std::wstring& message) override;
             void LogWarning(const std::wstring& message) override;
             void LogError(const std::wstring& message) override;
+            void LogError(const std::string& message) override;
 
         private:
             void write(const std::wstring& log_level, const std::wstring& message);

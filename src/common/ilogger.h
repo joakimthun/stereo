@@ -19,6 +19,7 @@ namespace stereo {
             virtual void LogInfo(const std::wstring& message) = 0;
             virtual void LogWarning(const std::wstring& message) = 0;
             virtual void LogError(const std::wstring& message) = 0;
+            virtual void LogError(const std::string& message) = 0;
 
         protected:
             static const std::wstring& get_log_level_name(LogLevel log_level);

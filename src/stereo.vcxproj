@@ -126,6 +126,7 @@
     <ClCompile Include="assemblies\assembly_reader.cpp" />
     <ClCompile Include="common\console_logger.cpp" />
     <ClCompile Include="common\ilogger.cpp" />
+    <ClCompile Include="exceptions\stereo_exception.cpp" />
     <ClCompile Include="pe\coded_index.cpp" />
     <ClCompile Include="pe\pe_image_reader.cpp" />
     <ClCompile Include="stereo.cpp" />
@@ -148,6 +149,7 @@
     <ClInclude Include="common\ptr_util.h" />
     <ClInclude Include="common\str_util.h" />
     <ClInclude Include="common\typedef.h" />
+    <ClInclude Include="exceptions\stereo_exception.h" />
     <ClInclude Include="pe\coded_index.h" />
     <ClInclude Include="pe\metadata_token.h" />
     <ClInclude Include="pe\pe_image.h" />

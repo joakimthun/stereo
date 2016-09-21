@@ -81,6 +81,9 @@
     <ClInclude Include="assemblies\resolution_scope.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="exceptions\stereo_exception.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stereo.cpp">
@@ -102,6 +105,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="assemblies\assembly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="exceptions\stereo_exception.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

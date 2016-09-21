@@ -9,8 +9,6 @@ namespace stereo {
 
         struct MemberRef
         {
-            MemberRef(const std::wstring& name) : name(name) {}
-
             std::wstring name;
         };
 

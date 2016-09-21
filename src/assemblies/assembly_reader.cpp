@@ -82,21 +82,28 @@ namespace stereo {
             resize_if_needed(member_refs_, pe::MetadataTable::MemberRef);
 
             auto table_row_ptr = get_table_row_ptr(pe::MetadataTable::MemberRef, rid);
+            auto member_ref = std::make_unique<MemberRef>();
 
             // Class (an index into the MethodDef, ModuleRef, TypeDef, TypeRef, or TypeSpec tables; more precisely, a MemberRefParent(§II.24.2.6) coded index)
             auto token = read_metadata_token(&table_row_ptr, pe::CodedIndexType::MemberRefParent);
 
             // Name (an index into the String heap) 
-            auto name = read_string(&table_row_ptr);
+            member_ref->name = read_string(&table_row_ptr);
 
             // Signature (an index into the Blob heap) 
-            auto signature = read_blob_index(&table_row_ptr);
+            auto signature = read_blob(&table_row_ptr);
 
             // TODO: Implement all token type cases
             if (token.type() == pe::MetadataTokenType::TypeRef)
+            {
                 read_type_ref(token.rid());
+            }
+            else
+            {
+                throw "read_member_ref -> unsupported token type";
+            }
 
-            member_refs_[get_index_from_rid(rid)] = std::move(std::make_unique<MemberRef>(name));
+            member_refs_[get_index_from_rid(rid)] = std::move(member_ref);
             return member_refs_[get_index_from_rid(rid)].get();
         }
 
