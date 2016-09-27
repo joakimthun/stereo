@@ -401,6 +401,10 @@ namespace stereo {
             u8 byte1;
             u8 byte2;
             FlowControl flow_control;
+
+            inline bool operator==(const Opcode& other) {
+                return this->byte1 == other.byte1 && this->byte2 == other.byte2;
+            }
         };
 
     }
