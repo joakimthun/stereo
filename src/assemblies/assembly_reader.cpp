@@ -214,10 +214,9 @@ namespace stereo {
         void AssemblyReader::read_method_body_instructions(MethodDef* method, u8* method_body_ptr)
         {
             auto opcode = read_opcode(&method_body_ptr);
+            auto stop_addr = method_body_ptr + method->body->code_size;
 
-            auto read = true;
-
-            while (read)
+            while (method_body_ptr != stop_addr)
             {
                 logger_->LogInfo(opcode.name);
                 switch (opcode.code)
@@ -235,12 +234,13 @@ namespace stereo {
                     auto type = token.type();
 
                     read_member_ref(rid);
-
-                    // TODO: Break on ret
-                    read = false;
+                    break;
+                }
+                case Code::RET: {
                     break;
                 }
                 default:
+                    logger_->LogInfo(L"Unhandled opcode");
                     break;
                 }
 
