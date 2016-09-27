@@ -14,11 +14,7 @@ namespace stereo {
             Call = 0x28
         };
 
-        struct Opcode
-        {
-            Opcodes code;
-            std::wstring name;
-        };
+        
 
         class OpCodes
         {

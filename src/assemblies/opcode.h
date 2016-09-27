@@ -381,5 +381,19 @@ namespace stereo {
             UNUSED70,
         };
 
+        struct Opcode
+        {
+            Code code;
+            std::wstring name;
+            StackBehaviour stack_behaviour_pop;
+            StackBehaviour stack_behaviour_push;
+            OperandType operand_type;
+            OpCodeType opcode_type;
+            u8 length;
+            u8 byte1;
+            u8 byte2;
+            FlowControl flow_control;
+        };
+
     }
 }
