@@ -300,6 +300,16 @@ namespace stereo {
                 Opcode(Code::UNUSED55, L"unused", StackBehaviour::Pop0, StackBehaviour::Push0, OperandType::InlineNone, OpCodeType::IPrimitive, 2, 0xFE, 0x21, FlowControl::NEXT),
                 Opcode(Code::UNUSED70, L"unused", StackBehaviour::Pop0, StackBehaviour::Push0, OperandType::InlineNone, OpCodeType::IPrimitive, 2, 0xFE, 0x22, FlowControl::NEXT),
             };
-        }
+
+            const Opcode & get_one_byte_code(u8 index)
+            {
+                return one_byte_codes[index];
+            }
+
+            const Opcode & get_two_byte_code(u8 index)
+            {
+                return two_byte_codes[index];
+            }
+}
     }
 }

@@ -211,27 +211,26 @@ namespace stereo {
             }
         }
 
-        void AssemblyReader::read_method_body_instructions(MethodDef * method, u8* method_body_ptr)
+        void AssemblyReader::read_method_body_instructions(MethodDef* method, u8* method_body_ptr)
         {
-            auto opcode = *method_body_ptr;
+            auto opcode = read_opcode(&method_body_ptr);
+
             auto read = true;
 
             while (read)
             {
-                switch (opcode)
+                switch (opcode.code)
                 {
-                case 0x72: {
+                case Code::LDSTR: {
                     logger_->LogInfo(L"ldstr");
-                    method_body_ptr++;
 
                     auto str_token = read_metadata_token(&method_body_ptr);
                     auto str = read_us_string(str_token.rid());
                     logger_->LogInfo(str);
                     break;
                 }
-                case 0x28: {
+                case Code::CALL: {
                     logger_->LogInfo(L"call");
-                    method_body_ptr++;
 
                     auto token = read_metadata_token(&method_body_ptr);
 
@@ -248,8 +247,14 @@ namespace stereo {
                     break;
                 }
 
-                opcode = *method_body_ptr;
+                opcode = read_opcode(&method_body_ptr);
             }
+        }
+
+        const Opcode& AssemblyReader::read_opcode(u8** method_body_ptr)
+        {
+            auto code = ptrutil::read8(method_body_ptr);
+            return code == 0xff ? opcodes::get_two_byte_code(ptrutil::read8(method_body_ptr)) : opcodes::get_one_byte_code(code);
         }
 
         std::wstring AssemblyReader::read_us_string(u32 index)

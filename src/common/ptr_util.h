@@ -5,6 +5,11 @@
 namespace stereo {
     namespace ptrutil {
 
+        inline u8 peek8(u8* ptr)
+        {
+            return *ptr;
+        }
+
         inline u16 peek16(u8* ptr)
         {
             return *(reinterpret_cast<u16*>(ptr));

@@ -39,6 +39,7 @@ namespace stereo {
         private:
             void read_method_body(MethodDef* method);
             void read_method_body_instructions(MethodDef* method, u8* method_body_ptr);
+            const Opcode& read_opcode(u8** method_body_ptr);
             std::wstring read_us_string(u32 index);
             std::wstring read_string(u8** index_ptr);
             u32 read_string_index(u8** index_ptr);
