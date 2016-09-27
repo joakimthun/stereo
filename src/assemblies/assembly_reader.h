@@ -11,6 +11,7 @@
 #include "../pe/pe_image.h"
 #include "../pe/metadata_token.h"
 #include "../pe/coded_index.h"
+#include "opcodes.h"
 #include "blob_entry.h"
 #include "method_def.h"
 #include "module_def.h"

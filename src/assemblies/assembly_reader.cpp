@@ -218,9 +218,9 @@ namespace stereo {
 
             while (read)
             {
-                switch (static_cast<Opcodes>(opcode))
+                switch (opcode)
                 {
-                case Opcodes::Ldstr: {
+                case 0x72: {
                     logger_->LogInfo(L"ldstr");
                     method_body_ptr++;
 
@@ -229,7 +229,7 @@ namespace stereo {
                     logger_->LogInfo(str);
                     break;
                 }
-                case Opcodes::Call: {
+                case 0x28: {
                     logger_->LogInfo(L"call");
                     method_body_ptr++;
 

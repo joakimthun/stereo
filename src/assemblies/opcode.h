@@ -72,6 +72,7 @@ namespace stereo {
             Popref_popi_popr4,
             Popref_popi_popr8,
             Popref_popi_popref,
+            Popref_popi_pop1,
             PopAll,
             Push0,
             Push1,
@@ -383,6 +384,13 @@ namespace stereo {
 
         struct Opcode
         {
+            Opcode(Code code, const std::wstring& name, StackBehaviour stack_behaviour_pop, StackBehaviour stack_behaviour_push, OperandType operand_type,
+                OpCodeType opcode_type, u8 length, u8 byte1, u8 byte2, FlowControl flow_control)
+                :
+                code(code), name(name), stack_behaviour_pop(stack_behaviour_pop), stack_behaviour_push(stack_behaviour_push), operand_type(operand_type),
+                opcode_type(opcode_type), length(length), byte1(byte1), byte2(byte2), flow_control(flow_control)
+            {}
+
             Code code;
             std::wstring name;
             StackBehaviour stack_behaviour_pop;
