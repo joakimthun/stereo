@@ -219,19 +219,16 @@ namespace stereo {
 
             while (read)
             {
+                logger_->LogInfo(opcode.name);
                 switch (opcode.code)
                 {
                 case Code::LDSTR: {
-                    logger_->LogInfo(L"ldstr");
-
                     auto str_token = read_metadata_token(&method_body_ptr);
                     auto str = read_us_string(str_token.rid());
                     logger_->LogInfo(str);
                     break;
                 }
                 case Code::CALL: {
-                    logger_->LogInfo(L"call");
-
                     auto token = read_metadata_token(&method_body_ptr);
 
                     auto rid = token.rid();
