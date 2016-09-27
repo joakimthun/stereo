@@ -139,6 +139,7 @@
     <ClInclude Include="assemblies\member_ref.h" />
     <ClInclude Include="assemblies\method_def.h" />
     <ClInclude Include="assemblies\module_def.h" />
+    <ClInclude Include="assemblies\opcode.h" />
     <ClInclude Include="assemblies\opcodes.h" />
     <ClInclude Include="assemblies\resolution_scope.h" />
     <ClInclude Include="assemblies\type_ref.h" />

@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
         logger.LogInfo(L"Module name -> " + module_def->name);
         logger.LogInfo(L"Entry point name -> " + method_def->name);
 
-        throw stereo::exceptions::StereoException("StereoException thrown!");
+        //throw stereo::exceptions::StereoException("StereoException thrown!");
     }
     catch (const stereo::exceptions::StereoException& ex)
     {

@@ -84,6 +84,9 @@
     <ClInclude Include="exceptions\stereo_exception.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="assemblies\opcode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stereo.cpp">

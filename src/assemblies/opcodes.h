@@ -3,6 +3,7 @@
 #include <string>
 
 #include "../common/typedef.h"
+#include "opcode.h"
 
 namespace stereo {
     namespace assemblies {
@@ -17,6 +18,15 @@ namespace stereo {
         {
             Opcodes code;
             std::wstring name;
+        };
+
+        class OpCodes
+        {
+        public:
+            OpCodes() = delete;
+
+        private:
+
         };
 
     }
