@@ -12,6 +12,7 @@
 #include "../pe/metadata_token.h"
 #include "../pe/coded_index.h"
 #include "opcodes.h"
+#include "operand.h"
 #include "blob_entry.h"
 #include "method_def.h"
 #include "module_def.h"
@@ -40,7 +41,7 @@ namespace stereo {
             void read_method_body(MethodDef* method);
             void read_method_body_instructions(MethodDef* method, u8* method_body_ptr);
             const Opcode& read_opcode(u8** method_body_ptr);
-            std::wstring read_us_string(u32 index);
+            const InlineString* read_us_string(u32 index);
             std::wstring read_string(u8** index_ptr);
             u32 read_string_index(u8** index_ptr);
             u32 read_blob_index(u8** index_ptr);
@@ -78,6 +79,7 @@ namespace stereo {
             std::vector<std::unique_ptr<MemberRef>> member_refs_;
             std::vector<std::unique_ptr<MethodDef>> method_defs_;
             std::vector<std::unique_ptr<TypeRef>> type_refs_;
+            std::vector<std::unique_ptr<InlineString>> us_strings_;
         };
 
     }

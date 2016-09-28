@@ -152,6 +152,7 @@
     <ClInclude Include="common\str_util.h" />
     <ClInclude Include="common\typedef.h" />
     <ClInclude Include="exceptions\stereo_exception.h" />
+    <ClInclude Include="assemblies\operand.h" />
     <ClInclude Include="pe\coded_index.h" />
     <ClInclude Include="pe\metadata_token.h" />
     <ClInclude Include="pe\pe_image.h" />

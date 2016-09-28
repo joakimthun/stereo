@@ -1,8 +1,11 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include "../common/typedef.h"
+#include "opcode.h"
+#include "operand.h"
 
 namespace stereo {
     namespace assemblies {
@@ -61,10 +64,19 @@ namespace stereo {
             RequireSecObject = 0x8000	        // Method calls another method containing security code
         };
 
+        struct Instruction
+        {
+            Instruction(const Opcode& code, const IOperand* operand) : code(code), operand(operand) {}
+
+            const Opcode& code;
+            const IOperand* operand;
+        };
+
         struct MethodBody
         {
             u32 max_stack_size;
             u32 code_size;
+            std::vector<std::unique_ptr<Instruction>> instructions;
         };
 
         struct MethodDef

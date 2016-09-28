@@ -224,7 +224,9 @@ namespace stereo {
                 case Code::LDSTR: {
                     auto str_token = read_metadata_token(&method_body_ptr);
                     auto str = read_us_string(str_token.rid());
-                    logger_->LogInfo(str);
+                    logger_->LogInfo(str->value);
+
+                    method->body->instructions.push_back(std::make_unique<Instruction>(opcode, str));
                     break;
                 }
                 case Code::CALL: {
@@ -254,19 +256,26 @@ namespace stereo {
             return code == 0xff ? opcodes::get_two_byte_code(ptrutil::read8(method_body_ptr)) : opcodes::get_one_byte_code(code);
         }
 
-        std::wstring AssemblyReader::read_us_string(u32 index)
+        const InlineString* AssemblyReader::read_us_string(u32 index)
         {
-            std::wstring value;
+            auto size = index + 1;
+
+            if (us_strings_.size() < size)
+                us_strings_.resize(size);
+
+            if (us_strings_[index] != nullptr)
+                return us_strings_[index].get();
 
             if (index == 0)
-                return value;
+                return nullptr;
 
             auto str_ptr = image_->heap_us.data + index;
 
             // II.24.2.4 #US and #Blob heaps
             auto length = read_us_or_blob_length(&str_ptr) & 0xfffffffe;
 
-            return strutil::to_utf16wstr(str_ptr, length);
+            us_strings_[index] = std::make_unique<InlineString>(strutil::to_utf16wstr(str_ptr, length));
+            return us_strings_[index].get();
         }
 
         std::wstring AssemblyReader::read_string(u8** index_ptr)
