@@ -218,13 +218,11 @@ namespace stereo {
 
             while (method_body_ptr != stop_addr)
             {
-                logger_->LogInfo(opcode.name);
                 switch (opcode.code)
                 {
                 case Code::LDSTR: {
                     auto str_token = read_metadata_token(&method_body_ptr);
                     auto str = read_us_string(str_token.rid());
-                    logger_->LogInfo(str->value);
 
                     method->body->instructions.push_back(std::make_unique<Instruction>(opcode, str));
                     break;
@@ -243,7 +241,7 @@ namespace stereo {
                     break;
                 }
                 default:
-                    logger_->LogInfo(L"Unhandled opcode");
+                    logger_->LogError(L"AssemblyReader::read_method_body_instructions -> Unhandled opcode");
                     break;
                 }
 
