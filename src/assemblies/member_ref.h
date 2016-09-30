@@ -7,9 +7,13 @@
 namespace stereo {
     namespace assemblies {
 
-        struct MemberRef
+        struct IOperand;
+        struct TypeRef;
+
+        struct MemberRef : public IOperand
         {
             std::wstring name;
+            const TypeRef* type_ref;
         };
 
     }

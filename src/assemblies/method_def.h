@@ -66,9 +66,10 @@ namespace stereo {
 
         struct Instruction
         {
+            Instruction(const Opcode& code) : code(code), operand(nullptr) {}
             Instruction(const Opcode& code, const IOperand* operand) : code(code), operand(operand) {}
 
-            const Opcode& code;
+            Opcode code;
             const IOperand* operand;
         };
 

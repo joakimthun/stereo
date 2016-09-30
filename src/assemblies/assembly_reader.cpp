@@ -96,7 +96,7 @@ namespace stereo {
             // TODO: Implement all token type cases
             if (token.type() == pe::MetadataTokenType::TypeRef)
             {
-                read_type_ref(token.rid());
+                member_ref->type_ref = read_type_ref(token.rid());
             }
             else
             {
@@ -235,10 +235,11 @@ namespace stereo {
                     auto rid = token.rid();
                     auto type = token.type();
 
-                    read_member_ref(rid);
+                    method->body->instructions.push_back(std::make_unique<Instruction>(opcode, read_member_ref(rid)));
                     break;
                 }
                 case Code::RET: {
+                    method->body->instructions.push_back(std::make_unique<Instruction>(opcode));
                     break;
                 }
                 default:
