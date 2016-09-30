@@ -130,6 +130,7 @@
     <ClCompile Include="exceptions\stereo_exception.cpp" />
     <ClCompile Include="pe\coded_index.cpp" />
     <ClCompile Include="pe\pe_image_reader.cpp" />
+    <ClCompile Include="runtime\execution_engine.cpp" />
     <ClCompile Include="stereo.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -158,6 +159,7 @@
     <ClInclude Include="pe\pe_image.h" />
     <ClInclude Include="pe\pe.h" />
     <ClInclude Include="pe\pe_image_reader.h" />
+    <ClInclude Include="runtime\execution_engine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
