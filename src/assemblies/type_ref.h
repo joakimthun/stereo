@@ -17,6 +17,11 @@ namespace stereo {
             const IResolutionScope* resolution_scope;
             std::wstring name;
             std::wstring name_space;
+
+            inline std::wstring fullname() const
+            {
+                return name_space + L"." + name;
+            }
         };
 
         const TypeRef* get_primitive_type(ElementType element_type);
