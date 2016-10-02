@@ -96,6 +96,18 @@
     <ClInclude Include="runtime\stereo_object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="assemblies\method_ref.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="assemblies\calling_convention.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="assemblies\element_type.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="assemblies\parameter_def.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stereo.cpp">
@@ -126,6 +138,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="runtime\execution_engine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="assemblies\type_ref.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -87,13 +87,13 @@ namespace stereo {
             resize_if_needed(member_refs_, pe::MetadataTable::MemberRef);
 
             auto table_row_ptr = get_table_row_ptr(pe::MetadataTable::MemberRef, rid);
-            auto member_ref = std::make_unique<MemberRef>();
+            //auto member_ref = std::make_unique<MemberRef>();
 
             // Class (an index into the MethodDef, ModuleRef, TypeDef, TypeRef, or TypeSpec tables; more precisely, a MemberRefParent(§II.24.2.6) coded index)
             auto token = read_metadata_token(&table_row_ptr, pe::CodedIndexType::MemberRefParent);
 
             // Name (an index into the String heap) 
-            member_ref->name = read_string(&table_row_ptr);
+            auto name = read_string(&table_row_ptr);
 
             // Signature (an index into the Blob heap) 
             auto signature = read_blob(&table_row_ptr);
@@ -101,15 +101,16 @@ namespace stereo {
             // TODO: Implement all token type cases
             if (token.type() == pe::MetadataTokenType::TypeRef)
             {
-                member_ref->type_ref = read_type_ref(token.rid());
+                auto declaring_type = read_type_ref(token.rid());
+                auto member_ref = read_member_ref_sig(signature.get(), name, declaring_type);
+
+                member_refs_[get_index_from_rid(rid)] = std::move(member_ref);
+                return member_refs_[get_index_from_rid(rid)].get();
             }
             else
             {
                 throw "read_member_ref -> unsupported token type";
             }
-
-            member_refs_[get_index_from_rid(rid)] = std::move(member_ref);
-            return member_refs_[get_index_from_rid(rid)].get();
         }
 
         const TypeRef* AssemblyReader::read_type_ref(u32 rid)
@@ -274,7 +275,7 @@ namespace stereo {
             auto str_ptr = image_->heap_us.data + index;
 
             // II.24.2.4 #US and #Blob heaps
-            auto length = read_us_or_blob_length(&str_ptr) & 0xfffffffe;
+            auto length = read_compressed_u32(&str_ptr) & 0xfffffffe;
 
             us_strings_[index] = std::make_unique<InlineString>(strutil::to_utf16wstr(str_ptr, length));
             return us_strings_[index].get();
@@ -324,7 +325,7 @@ namespace stereo {
         {
             auto index = read_blob_index(index_ptr);
             auto blob_ptr = image_->heap_blob.data + index;
-            auto length = read_us_or_blob_length(&blob_ptr);
+            auto length = read_compressed_u32(&blob_ptr);
 
             auto buffer = new u8[length];
             std::memcpy(buffer, blob_ptr, length);
@@ -362,7 +363,80 @@ namespace stereo {
             }
             default:
                 throw "AssemblyReader::read_operand -> Unsupported token type";
-                break;
+            }
+        }
+
+        std::unique_ptr<MemberRef> AssemblyReader::read_member_ref_sig(const BlobEntry* sig, const std::wstring& name, const TypeRef* declaring_type)
+        {
+            const u8 field_sig = 0x6;
+            if (sig->data[0] == field_sig)
+            {
+                throw "AssemblyReader::read_member_ref_sig -> field_sig";
+            }
+            else 
+            {
+                auto method_ref = std::make_unique<MethodRef>(name, declaring_type);
+
+                read_method_sig(sig, method_ref.get());
+
+                return std::move(method_ref);
+            }
+        }
+
+        void AssemblyReader::read_method_sig(const BlobEntry* sig, MethodRef* method)
+        {
+            u8* data = sig->data;
+            auto calling_convention = ptrutil::read8(&data);
+
+            const u8 has_this = 0x20;
+            const u8 explicit_this = 0x40;
+
+            if ((calling_convention & has_this) != 0) 
+            {
+                method->has_this = true;
+                calling_convention = (u8)(calling_convention & ~has_this);
+            }
+
+            if ((calling_convention & explicit_this) != 0) 
+            {
+                method->explicit_this = true;
+                calling_convention = (u8)(calling_convention & ~explicit_this);
+            }
+
+            method->calling_convention = static_cast<CallingConvention>(calling_convention);
+            method->num_params = read_compressed_u32(const_cast<const u8**>(&data));
+            method->return_type = read_type_sig(ptrutil::read8(&data));
+
+            if (method->num_params == 0)
+                return;
+
+            for (u32 i = 0; i < method->num_params; i++)
+                method->parameters.push_back(std::make_unique<ParameterDef>(read_type_sig(ptrutil::read8(&data))));
+        }
+
+        const TypeRef * AssemblyReader::read_type_sig(u8 element_type)
+        {
+            auto type = static_cast<ElementType>(element_type);
+
+            switch (type)
+            {
+            case ElementType::Void:
+            case ElementType::Boolean:
+            case ElementType::Char:
+            case ElementType::I1:
+            case ElementType::U1:
+            case ElementType::I2:
+            case ElementType::U2:
+            case ElementType::I4:
+            case ElementType::U4:
+            case ElementType::I8:
+            case ElementType::U8:
+            case ElementType::R4:
+            case ElementType::R8:
+            case ElementType::String:
+                return get_primitive_type(type);
+            default:
+                throw "AssemblyReader::read_type_sig -> Unsupported element type";
             }
         }
 
@@ -380,7 +454,7 @@ namespace stereo {
             return const_cast<u8*>(image_->raw_data) + resolve_rva(rva);
         }
 
-        u32 AssemblyReader::read_us_or_blob_length(const u8** blob_ptr)
+        u32 AssemblyReader::read_compressed_u32(const u8** blob_ptr)
         {
             u32 length;
             auto ptr = *blob_ptr;

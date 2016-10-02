@@ -15,10 +15,12 @@
 #include "operand.h"
 #include "blob_entry.h"
 #include "method_def.h"
+#include "method_ref.h"
 #include "module_def.h"
 #include "type_ref.h"
 #include "member_ref.h"
 #include "assembly_ref.h"
+#include "element_type.h"
 
 namespace stereo {
     namespace assemblies {
@@ -50,10 +52,13 @@ namespace stereo {
             pe::MetadataToken read_metadata_token(u8** ptr);
             pe::MetadataToken read_metadata_token(u8** ptr, pe::CodedIndexType index_type);
             const IOperand* read_operand(pe::MetadataToken& token);
+            std::unique_ptr<MemberRef> read_member_ref_sig(const BlobEntry* sig, const std::wstring& name, const TypeRef* declaring_type);
+            void read_method_sig(const BlobEntry* sig, MethodRef* method);
+            const TypeRef* read_type_sig(u8 element_type);
 
             u8* get_table_row_ptr(pe::MetadataTable table_type, u32 rid);
             u8* get_method_body_ptr(u32 rva);
-            u32 read_us_or_blob_length(const u8** blob_ptr);
+            u32 read_compressed_u32(const u8** blob_ptr);
             u32 resolve_rva(u32 rva);
             const pe::SectionTable* resolve_rva_section(u32 rva);
             u32 get_num_entries(pe::MetadataTable table);

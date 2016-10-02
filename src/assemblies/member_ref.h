@@ -12,8 +12,10 @@ namespace stereo {
 
         struct MemberRef : public IOperand
         {
+            MemberRef(const std::wstring& name, const TypeRef* declaring_type) : name(name), declaring_type(declaring_type) {}
+
             std::wstring name;
-            const TypeRef* type_ref;
+            const TypeRef* declaring_type;
         };
 
     }

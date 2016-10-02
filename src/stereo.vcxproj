@@ -125,6 +125,7 @@
     <ClCompile Include="assemblies\assembly.cpp" />
     <ClCompile Include="assemblies\assembly_reader.cpp" />
     <ClCompile Include="assemblies\opcodes.cpp" />
+    <ClCompile Include="assemblies\type_ref.cpp" />
     <ClCompile Include="common\console_logger.cpp" />
     <ClCompile Include="common\ilogger.cpp" />
     <ClCompile Include="exceptions\stereo_exception.cpp" />
@@ -138,11 +139,15 @@
     <ClInclude Include="assemblies\assembly_reader.h" />
     <ClInclude Include="assemblies\assembly_ref.h" />
     <ClInclude Include="assemblies\blob_entry.h" />
+    <ClInclude Include="assemblies\calling_convention.h" />
+    <ClInclude Include="assemblies\element_type.h" />
     <ClInclude Include="assemblies\member_ref.h" />
     <ClInclude Include="assemblies\method_def.h" />
+    <ClInclude Include="assemblies\method_ref.h" />
     <ClInclude Include="assemblies\module_def.h" />
     <ClInclude Include="assemblies\opcode.h" />
     <ClInclude Include="assemblies\opcodes.h" />
+    <ClInclude Include="assemblies\parameter_def.h" />
     <ClInclude Include="assemblies\resolution_scope.h" />
     <ClInclude Include="assemblies\type_ref.h" />
     <ClInclude Include="common\byteswap.h" />
