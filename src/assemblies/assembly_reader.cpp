@@ -18,6 +18,11 @@ namespace stereo {
         {
         }
 
+        const pe::PEImage * AssemblyReader::get_image()
+        {
+            return image_.get();
+        }
+
         u32 AssemblyReader::get_entry_point()
         {
             auto ept = pe::MetadataToken(image_->cli_header.entry_point_token);
@@ -136,7 +141,7 @@ namespace stereo {
             // TypeNamespace(an index into the String heap)
             type_ref->name_space = read_string(&table_row_ptr);
 
-            type_refs_[get_index_from_rid(rid)] = std::make_unique<TypeRef>();
+            type_refs_[get_index_from_rid(rid)] = std::move(type_ref);
             return type_refs_[get_index_from_rid(rid)].get();
         }
 
