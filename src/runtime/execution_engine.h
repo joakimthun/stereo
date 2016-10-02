@@ -1,10 +1,13 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #include "../common/console_logger.h"
 #include "../common/typedef.h"
 #include "stereo_object.h"
+#include "call_stack.h"
+#include "stack.h"
 #include "../assemblies/assembly.h"
 #include "../assemblies/method_def.h"
 #include "../assemblies/method_ref.h"
@@ -24,13 +27,20 @@ namespace stereo {
             void execute();
 
         private:
-            void execute(const assemblies::MethodDef* method);
+            void cycle();
+            void call(const assemblies::MethodDef* method);
+            void call(const assemblies::MethodRef* method);
+            void ret();
+            void ldstr();
+            void set_current_instruction();
 
             std::unique_ptr<logging::ILogger> logger_;
             assemblies::Assembly* assembly_;
-            u64 ip_;
-            u64 sp_;
-            StereoObject* stack_[MAX_STACK];
+            CallStack call_stack_;
+            Stack stack_;
+            u32 ip_;
+            const assemblies::Instruction* current_instruction_;
+
         };
     }
 }

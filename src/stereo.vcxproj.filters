@@ -108,6 +108,18 @@
     <ClInclude Include="assemblies\parameter_def.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="runtime\call_stack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\method_interceptors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\stack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\maybe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stereo.cpp">
@@ -141,6 +153,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="assemblies\type_ref.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\stereo_object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\method_interceptors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\stack_impl.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\stack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

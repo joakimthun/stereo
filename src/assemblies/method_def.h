@@ -78,6 +78,14 @@ namespace stereo {
             u32 max_stack_size;
             u32 code_size;
             std::vector<std::unique_ptr<Instruction>> instructions;
+
+            inline const Instruction* get_instruction(u32 index)
+            {
+                if (index >= instructions.size())
+                    return nullptr;
+
+                return instructions[index].get();
+            }
         };
 
         struct MethodDef

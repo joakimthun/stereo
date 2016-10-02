@@ -1,5 +1,7 @@
 #include "execution_engine.h"
 
+#include "method_interceptors.h"
+
 namespace stereo {
     namespace runtime {
 
@@ -7,8 +9,7 @@ namespace stereo {
             : 
             logger_(std::make_unique<logging::ConsoleLogger>()), 
             assembly_(assembly), 
-            ip_(0),
-            sp_(0)
+            ip_(0)
         {
         }
 
@@ -18,36 +19,74 @@ namespace stereo {
         {
             auto ep = assembly_->get_entry_point();
             auto main = assembly_->get_method_def(ep);
-            execute(main);
+            call(main);
+            cycle();
         }
 
-        void ExecutionEngine::execute(const assemblies::MethodDef* method)
+        void ExecutionEngine::cycle()
         {
-            for (const auto& instruction : method->body->instructions)
+            while (1)
             {
-                switch (instruction->code.code)
+                set_current_instruction();
+                if (current_instruction_ == nullptr)
+                    return;
+
+                switch (current_instruction_->code.code)
                 {
                 case assemblies::Code::LDSTR: {
-                    auto str = static_cast<const assemblies::InlineString*>(instruction->operand);
-                    logger_->LogInfo(instruction->code.name + L": " + str->value);
-
+                    ldstr();
                     break;
                 }
                 case assemblies::Code::CALL: {
-                    auto method_ref = static_cast<const assemblies::MethodRef*>(instruction->operand);
-                    logger_->LogInfo(instruction->code.name + L": " + method_ref->fullname());
-
+                    auto method_ref = static_cast<const assemblies::MethodRef*>(current_instruction_->operand);
+                    call(method_ref);
                     break;
                 }
                 case assemblies::Code::RET: {
-                    logger_->LogInfo(instruction->code.name);
+                    ret();
                     break;
                 }
                 default:
                     logger_->LogError(L"ExecutionEngine::execute -> Unhandled opcode");
                     break;
                 }
+
+                ip_++;
             }
+        }
+
+        void ExecutionEngine::call(const assemblies::MethodDef* method)
+        {
+            call_stack_.push(StackFrame(method, stack_.sp()));
+        }
+
+        void ExecutionEngine::call(const assemblies::MethodRef* method)
+        {
+            auto method_ref = static_cast<const assemblies::MethodRef*>(current_instruction_->operand);
+            if (!try_call_interceptor(method_ref->fullname(), stack_))
+                throw "ExecutionEngine::call -> Unsupported MethodRef";
+        }
+
+        void ExecutionEngine::ret()
+        {
+            call_stack_.pop();
+        }
+
+        void ExecutionEngine::ldstr()
+        {
+            stack_.push_str(static_cast<const assemblies::InlineString*>(current_instruction_->operand));
+        }
+
+        void ExecutionEngine::set_current_instruction()
+        {
+            auto call_stack_top = call_stack_.top();
+            if (call_stack_top == nullptr)
+            {
+                current_instruction_ = nullptr;
+                return;
+            }
+
+            current_instruction_ = call_stack_top->method->body->get_instruction(ip_);
         }
     }
 }

@@ -132,6 +132,10 @@
     <ClCompile Include="pe\coded_index.cpp" />
     <ClCompile Include="pe\pe_image_reader.cpp" />
     <ClCompile Include="runtime\execution_engine.cpp" />
+    <ClCompile Include="runtime\method_interceptors.cpp" />
+    <ClCompile Include="runtime\stack.cpp" />
+    <ClCompile Include="runtime\stack_impl.h" />
+    <ClCompile Include="runtime\stereo_object.cpp" />
     <ClCompile Include="stereo.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -154,6 +158,7 @@
     <ClInclude Include="common\console_logger.h" />
     <ClInclude Include="common\file_util.h" />
     <ClInclude Include="common\ilogger.h" />
+    <ClInclude Include="common\maybe.h" />
     <ClInclude Include="common\ptr_util.h" />
     <ClInclude Include="common\str_util.h" />
     <ClInclude Include="common\typedef.h" />
@@ -164,7 +169,10 @@
     <ClInclude Include="pe\pe_image.h" />
     <ClInclude Include="pe\pe.h" />
     <ClInclude Include="pe\pe_image_reader.h" />
+    <ClInclude Include="runtime\call_stack.h" />
     <ClInclude Include="runtime\execution_engine.h" />
+    <ClInclude Include="runtime\method_interceptors.h" />
+    <ClInclude Include="runtime\stack.h" />
     <ClInclude Include="runtime\stereo_object.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
