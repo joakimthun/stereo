@@ -9,8 +9,6 @@
 namespace stereo {
     namespace assemblies {
 
-        struct TypeRef;
-
         struct MethodRef : public MemberRef
         {
             MethodRef(const std::wstring& name, const TypeRef* declaring_type) : MemberRef(name, declaring_type) {}

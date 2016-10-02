@@ -7,6 +7,7 @@
 #include "stereo_object.h"
 #include "../assemblies/assembly.h"
 #include "../assemblies/method_def.h"
+#include "../assemblies/method_ref.h"
 #include "../assemblies/member_ref.h"
 
 #define MAX_STACK 1000

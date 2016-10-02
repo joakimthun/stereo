@@ -34,8 +34,8 @@ namespace stereo {
                     break;
                 }
                 case assemblies::Code::CALL: {
-                    auto member_ref = static_cast<const assemblies::MemberRef*>(instruction->operand);
-                    logger_->LogInfo(instruction->code.name + L": " + member_ref->name);
+                    auto method_ref = static_cast<const assemblies::MethodRef*>(instruction->operand);
+                    logger_->LogInfo(instruction->code.name + L": " + method_ref->fullname());
 
                     break;
                 }
