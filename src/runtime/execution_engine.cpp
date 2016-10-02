@@ -3,7 +3,12 @@
 namespace stereo {
     namespace runtime {
 
-        ExecutionEngine::ExecutionEngine(assemblies::Assembly* assembly) : logger_(std::make_unique<logging::ConsoleLogger>()), assembly_(assembly)
+        ExecutionEngine::ExecutionEngine(assemblies::Assembly* assembly) 
+            : 
+            logger_(std::make_unique<logging::ConsoleLogger>()), 
+            assembly_(assembly), 
+            ip_(0),
+            sp_(0)
         {
         }
 

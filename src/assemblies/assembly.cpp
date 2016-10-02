@@ -8,6 +8,11 @@ namespace stereo {
             reader_ = std::make_unique<AssemblyReader>(file_path);
         }
 
+        const pe::PEImage * Assembly::get_image()
+        {
+            return reader_->get_image();
+        }
+
         u32 Assembly::get_entry_point()
         {
             return reader_->get_entry_point();

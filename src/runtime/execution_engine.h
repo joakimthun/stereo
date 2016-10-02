@@ -4,9 +4,12 @@
 
 #include "../common/console_logger.h"
 #include "../common/typedef.h"
+#include "stereo_object.h"
 #include "../assemblies/assembly.h"
 #include "../assemblies/method_def.h"
 #include "../assemblies/member_ref.h"
+
+#define MAX_STACK 1000
 
 namespace stereo {
     namespace runtime {
@@ -24,7 +27,9 @@ namespace stereo {
 
             std::unique_ptr<logging::ILogger> logger_;
             assemblies::Assembly* assembly_;
+            u64 ip_;
             u64 sp_;
+            StereoObject* stack_[MAX_STACK];
         };
     }
 }

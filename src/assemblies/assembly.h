@@ -18,6 +18,7 @@ namespace stereo {
         public:
             Assembly(const char* file_path);
 
+            const pe::PEImage* get_image();
             u32 get_entry_point();
             const ModuleDef* get_module_def();
             const MethodDef* get_method_def(u32 rid);

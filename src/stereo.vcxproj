@@ -160,6 +160,7 @@
     <ClInclude Include="pe\pe.h" />
     <ClInclude Include="pe\pe_image_reader.h" />
     <ClInclude Include="runtime\execution_engine.h" />
+    <ClInclude Include="runtime\stereo_object.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

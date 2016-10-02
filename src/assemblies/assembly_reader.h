@@ -30,6 +30,7 @@ namespace stereo {
         public: 
             AssemblyReader(const char* file_path);
 
+            const pe::PEImage* get_image();
             u32 get_entry_point();
             const ModuleDef* read_module_def();
             const MethodDef* read_method_def(u32 rid);
