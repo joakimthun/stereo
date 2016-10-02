@@ -223,30 +223,28 @@ namespace stereo {
 
             while (method_body_ptr != stop_addr)
             {
-                switch (opcode.code)
+                switch (opcode.operand_type)
                 {
-                case Code::LDSTR: {
-                    auto str_token = read_metadata_token(&method_body_ptr);
-                    auto str = read_us_string(str_token.rid());
-
-                    method->body->instructions.push_back(std::make_unique<Instruction>(opcode, str));
-                    break;
-                }
-                case Code::CALL: {
-                    auto token = read_metadata_token(&method_body_ptr);
-
-                    auto rid = token.rid();
-                    auto type = token.type();
-
-                    method->body->instructions.push_back(std::make_unique<Instruction>(opcode, read_member_ref(rid)));
-                    break;
-                }
-                case Code::RET: {
+                case OperandType::InlineNone: {
                     method->body->instructions.push_back(std::make_unique<Instruction>(opcode));
                     break;
                 }
+                case OperandType::InlineString: {
+                    auto str_token = read_metadata_token(&method_body_ptr);
+                    auto str = read_us_string(str_token.rid());
+                    method->body->instructions.push_back(std::make_unique<Instruction>(opcode, str));
+                    break;
+                }
+                case OperandType::InlineTok:
+                case OperandType::InlineType:
+                case OperandType::InlineMethod:
+                case OperandType::InlineField: {
+                    auto token = read_metadata_token(&method_body_ptr);
+                    method->body->instructions.push_back(std::make_unique<Instruction>(opcode, read_operand(token)));
+                    break;
+                }
                 default:
-                    logger_->LogError(L"AssemblyReader::read_method_body_instructions -> Unhandled opcode");
+                    logger_->LogError(L"AssemblyReader::read_method_body_instructions -> Unhandled OperandType");
                     break;
                 }
 
@@ -350,6 +348,22 @@ namespace stereo {
                 token = ptrutil::read32(ptr);
 
             return pe::get_metadata_token_from_coded_index(coded_index_info, token);
+        }
+
+        const IOperand* AssemblyReader::read_operand(pe::MetadataToken& token)
+        {
+            auto rid = token.rid();
+            auto type = token.type();
+
+            switch (type)
+            {
+            case pe::MetadataTokenType::MemberRef: {
+                return read_member_ref(rid);
+            }
+            default:
+                throw "AssemblyReader::read_operand -> Unsupported token type";
+                break;
+            }
         }
 
         u8* AssemblyReader::get_table_row_ptr(pe::MetadataTable table_type, u32 rid)

@@ -49,6 +49,7 @@ namespace stereo {
             std::unique_ptr<BlobEntry> read_blob(u8** index_ptr);
             pe::MetadataToken read_metadata_token(u8** ptr);
             pe::MetadataToken read_metadata_token(u8** ptr, pe::CodedIndexType index_type);
+            const IOperand* read_operand(pe::MetadataToken& token);
 
             u8* get_table_row_ptr(pe::MetadataTable table_type, u32 rid);
             u8* get_method_body_ptr(u32 rva);
