@@ -11,6 +11,7 @@
 #include "../assemblies/method_def.h"
 #include "../assemblies/method_ref.h"
 #include "../assemblies/member_ref.h"
+#include "../assemblies/operand.h"
 
 #define MAX_STACK 1000
 
@@ -31,6 +32,7 @@ namespace stereo {
             void call(const assemblies::MethodRef* method);
             void ret();
             void ldstr();
+            const assemblies::IOperand* current_operand();
             void set_current_instruction();
 
             std::unique_ptr<logging::ILogger> logger_;
@@ -39,7 +41,7 @@ namespace stereo {
             u32 sp_;
             StereoObject* stack_;
             u32 ip_;
-            const assemblies::Instruction* current_instruction_;
+            const assemblies::InstructionBase* current_instruction_;
 
         };
     }

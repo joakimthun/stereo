@@ -46,7 +46,7 @@ namespace stereo {
                     break;
                 }
                 case assemblies::Code::CALL: {
-                    auto method_ref = static_cast<const assemblies::MethodRef*>(current_instruction_->operand);
+                    auto method_ref = static_cast<const assemblies::MethodRef*>(current_operand());
                     call(method_ref);
                     break;
                 }
@@ -55,7 +55,7 @@ namespace stereo {
                     break;
                 }
                 default:
-                    logger_->LogError(L"ExecutionEngine::execute -> Unhandled opcode");
+                    logger_->LogError(L"ExecutionEngine::execute -> Unhandled opcode: " + current_instruction_->code.name);
                     break;
                 }
 
@@ -70,9 +70,9 @@ namespace stereo {
 
         void ExecutionEngine::call(const assemblies::MethodRef* method)
         {
-            auto method_ref = static_cast<const assemblies::MethodRef*>(current_instruction_->operand);
+            auto method_ref = static_cast<const assemblies::MethodRef*>(current_operand());
             if (!try_call_interceptor(method_ref->fullname(), stack_, sp_))
-                throw exceptions::RuntimeException(L"ExecutionEngine::call -> Unsupported MethodRef");
+                throw exceptions::RuntimeException(L"ExecutionEngine::call -> Unsupported MethodRef: " + method_ref->fullname());
         }
 
         void ExecutionEngine::ret()
@@ -82,8 +82,22 @@ namespace stereo {
 
         void ExecutionEngine::ldstr()
         {
-            auto inl_str = static_cast<const assemblies::InlineString*>(current_instruction_->operand);
+            auto inl_str = static_cast<const assemblies::InlineString*>(current_operand());
             stack_[++sp_] = StereoObject(&inl_str->value);
+        }
+
+        const assemblies::IOperand* ExecutionEngine::current_operand()
+        {
+            if (current_instruction_ == nullptr || current_instruction_->ptr_type == assemblies::InstructionOperandPtrType::None)
+                return nullptr;
+
+            if (current_instruction_->ptr_type == assemblies::InstructionOperandPtrType::Ptr)
+                return static_cast<const assemblies::PtrInstruction*>(current_instruction_)->operand;
+
+            if (current_instruction_->ptr_type == assemblies::InstructionOperandPtrType::UniquePtr)
+                return static_cast<const assemblies::UniquePtrInstruction*>(current_instruction_)->operand.get();
+
+            throw exceptions::RuntimeException(L"ExecutionEngine::current_operand -> Unkown InstructionOperandPtrType");
         }
 
         void ExecutionEngine::set_current_instruction()

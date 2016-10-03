@@ -64,22 +64,40 @@ namespace stereo {
             RequireSecObject = 0x8000	        // Method calls another method containing security code
         };
 
-        struct Instruction
+        enum class InstructionOperandPtrType : u8
         {
-            Instruction(const Opcode& code) : code(code), operand(nullptr) {}
-            Instruction(const Opcode& code, const IOperand* operand) : code(code), operand(operand) {}
+            None,
+            Ptr,
+            UniquePtr
+        };
 
+        struct InstructionBase
+        {
+            InstructionBase(Opcode code) : code(code), ptr_type(InstructionOperandPtrType::None) {}
+            InstructionBase(Opcode code, InstructionOperandPtrType ptr_type) : code(code), ptr_type(ptr_type) {}
             Opcode code;
+            InstructionOperandPtrType ptr_type;
+        };
+
+        struct PtrInstruction : public InstructionBase
+        {
+            PtrInstruction(const Opcode& code, const IOperand* operand) : InstructionBase(code, InstructionOperandPtrType::Ptr), operand(operand) {}
             const IOperand* operand;
+        };
+
+        struct UniquePtrInstruction : public InstructionBase
+        {
+            UniquePtrInstruction(const Opcode& code, std::unique_ptr<IOperand> operand) : InstructionBase(code, InstructionOperandPtrType::UniquePtr), operand(std::move(operand)) {}
+            std::unique_ptr<IOperand> operand;
         };
 
         struct MethodBody
         {
             u32 max_stack_size;
             u32 code_size;
-            std::vector<std::unique_ptr<Instruction>> instructions;
+            std::vector<std::unique_ptr<InstructionBase>> instructions;
 
-            inline const Instruction* get_instruction(u32 index)
+            inline const InstructionBase* get_instruction(u32 index)
             {
                 if (index >= instructions.size())
                     return nullptr;
@@ -88,7 +106,7 @@ namespace stereo {
             }
         };
 
-        struct MethodDef
+        struct MethodDef : public IOperand
         {
             u32 rva;
             MethodImplAttributes impl_attributes;

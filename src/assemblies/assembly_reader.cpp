@@ -214,7 +214,7 @@ namespace stereo {
             }
             else
             {
-                // TODO: Implement fat header reading
+                throw exceptions::NotImplementedException(L"AssemblyReader::read_method_body -> Not implement fat header reading");
             }
         }
 
@@ -228,13 +228,32 @@ namespace stereo {
                 switch (opcode.operand_type)
                 {
                 case OperandType::InlineNone: {
-                    method->body->instructions.push_back(std::make_unique<Instruction>(opcode));
+                    method->body->instructions.push_back(std::make_unique<InstructionBase>(opcode));
                     break;
                 }
                 case OperandType::InlineString: {
                     auto str_token = read_metadata_token(&method_body_ptr);
                     auto str = read_us_string(str_token.rid());
-                    method->body->instructions.push_back(std::make_unique<Instruction>(opcode, str));
+                    method->body->instructions.push_back(std::make_unique<PtrInstruction>(opcode, str));
+                    break;
+                }
+                case OperandType::ShortInlineI: {
+                    if (opcode.code == Code::LDC_I4_S)
+                    {
+                        method->body->instructions.push_back(std::make_unique<UniquePtrInstruction>(opcode, std::make_unique<InlineValueOperand>(static_cast<i8>(ptrutil::read8(&method_body_ptr)))));
+                    }
+                    else
+                    {
+                        method->body->instructions.push_back(std::make_unique<UniquePtrInstruction>(opcode, std::make_unique<InlineValueOperand>(ptrutil::read8(&method_body_ptr))));
+                    }
+                    break;
+                }
+                case OperandType::InlineI: {
+                    method->body->instructions.push_back(std::make_unique<UniquePtrInstruction>(opcode, std::make_unique<InlineValueOperand>(static_cast<i32>(ptrutil::read32(&method_body_ptr)))));
+                    break;
+                }
+                case OperandType::InlineI8: {
+                    method->body->instructions.push_back(std::make_unique<UniquePtrInstruction>(opcode, std::make_unique<InlineValueOperand>(static_cast<i64>(ptrutil::read64(&method_body_ptr)))));
                     break;
                 }
                 case OperandType::InlineTok:
@@ -242,12 +261,11 @@ namespace stereo {
                 case OperandType::InlineMethod:
                 case OperandType::InlineField: {
                     auto token = read_metadata_token(&method_body_ptr);
-                    method->body->instructions.push_back(std::make_unique<Instruction>(opcode, read_operand(token)));
+                    method->body->instructions.push_back(std::make_unique<PtrInstruction>(opcode, read_operand(token)));
                     break;
                 }
                 default:
-                    logger_->LogError(L"AssemblyReader::read_method_body_instructions -> Unhandled OperandType");
-                    break;
+                    throw exceptions::NotImplementedException(L"AssemblyReader::read_method_body_instructions -> Unhandled OperandType");
                 }
 
                 opcode = read_opcode(&method_body_ptr);
@@ -361,6 +379,9 @@ namespace stereo {
             {
             case pe::MetadataTokenType::MemberRef: {
                 return read_member_ref(rid);
+            }
+            case pe::MetadataTokenType::Method: {
+                return read_method_def(rid);
             }
             default:
                 throw exceptions::NotImplementedException(L"AssemblyReader::read_operand -> Unsupported token type");
