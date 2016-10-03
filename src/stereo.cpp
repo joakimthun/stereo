@@ -10,7 +10,8 @@ int main(int argc, char *argv[])
 
     try
     {
-        auto assembly = std::make_unique<stereo::assemblies::Assembly>("../test_files/ConsoleApplication_Any.exe");
+        //auto assembly = std::make_unique<stereo::assemblies::Assembly>("../test_files/ConsoleApplication_Any.exe");
+        auto assembly = std::make_unique<stereo::assemblies::Assembly>("../test_files/ConsoleApplication_Any_InstMethod.exe");
         //auto assembly = std::make_unique<stereo::assemblies::Assembly>("../test_files/ClassLibrary1.dll");
 
         auto module_def = assembly->get_module_def();
