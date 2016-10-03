@@ -18,12 +18,10 @@ int main(int argc, char *argv[])
 
         auto ee = std::make_unique<stereo::runtime::ExecutionEngine>(assembly.get());
         ee->execute();
-
-        //throw stereo::exceptions::StereoException("StereoException thrown!");
     }
     catch (const stereo::exceptions::StereoException& ex)
     {
-        logger.LogError(ex.what());
+        logger.LogError(ex.msg());
     }
 
 	return 0;

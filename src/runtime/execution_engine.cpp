@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 
+#include "../exceptions/runtime_exception.h"
 #include "method_interceptors.h"
 
 namespace stereo {
@@ -71,7 +72,7 @@ namespace stereo {
         {
             auto method_ref = static_cast<const assemblies::MethodRef*>(current_instruction_->operand);
             if (!try_call_interceptor(method_ref->fullname(), stack_, sp_))
-                throw "ExecutionEngine::call -> Unsupported MethodRef";
+                throw exceptions::RuntimeException(L"ExecutionEngine::call -> Unsupported MethodRef");
         }
 
         void ExecutionEngine::ret()

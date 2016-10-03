@@ -9,12 +9,12 @@ namespace stereo {
         class StereoException : public std::exception
         {
         public:
-            StereoException(const std::string& message);
+            StereoException(const std::wstring& message);
 
-            virtual const char* what() const throw();
+            const std::wstring& StereoException::msg() const;
 
         protected:
-            std::string message_;
+            std::wstring message_;
         };
 
     }

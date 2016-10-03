@@ -2,6 +2,8 @@
 
 #include <array>
 
+#include "../exceptions/not_implemented_exception.h"
+
 namespace stereo {
     namespace assemblies {
 
@@ -43,7 +45,7 @@ namespace stereo {
             case ElementType::String:
                 return &builtin_types[static_cast<u8>(element_type)];
             default:
-                throw "get_builtin_type -> unsupported element type";
+                throw exceptions::NotImplementedException(L"get_builtin_type -> unsupported element type");
             }
         }
 

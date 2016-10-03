@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "coded_index.h"
+#include "../exceptions/not_implemented_exception.h"
 
 namespace stereo {
     namespace pe {
@@ -86,7 +87,7 @@ namespace stereo {
                 info.tables = { MetadataTable::TypeDef, MetadataTable::Method };
                 break;
             default:
-                throw "get_coded_index_info -> unsupported coded index type";
+                throw exceptions::NotImplementedException(L"get_coded_index_info -> unsupported coded index type");
             }
 
             u32 max = 0;
@@ -330,8 +331,7 @@ namespace stereo {
                 break;
             }
 
-            //TODO: Error handling
-            throw "get_metadata_token_from_coded_index -> unsupported CodedIndexType";
+            throw exceptions::NotImplementedException(L"get_metadata_token_from_coded_index -> unsupported CodedIndexType");
         }
 
     }

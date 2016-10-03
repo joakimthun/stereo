@@ -2,6 +2,7 @@
 
 #include <cstring>
 
+#include "../exceptions/not_implemented_exception.h"
 #include "../common/ptr_util.h"
 #include "opcodes.h"
 #include "../pe/coded_index.h"
@@ -109,7 +110,7 @@ namespace stereo {
             }
             else
             {
-                throw "read_member_ref -> unsupported token type";
+                throw exceptions::NotImplementedException(L"read_member_ref -> unsupported token type");
             }
         }
 
@@ -133,7 +134,7 @@ namespace stereo {
             }
             else
             {
-                throw "read_type_ref -> unsupported ResolutionScope type";
+                throw exceptions::NotImplementedException(L"read_type_ref -> unsupported ResolutionScope type");
             }
 
             // TypeName(an index into the String heap)
@@ -362,7 +363,7 @@ namespace stereo {
                 return read_member_ref(rid);
             }
             default:
-                throw "AssemblyReader::read_operand -> Unsupported token type";
+                throw exceptions::NotImplementedException(L"AssemblyReader::read_operand -> Unsupported token type");
             }
         }
 
@@ -371,7 +372,7 @@ namespace stereo {
             const u8 field_sig = 0x6;
             if (sig->data[0] == field_sig)
             {
-                throw "AssemblyReader::read_member_ref_sig -> field_sig";
+                throw exceptions::NotImplementedException(L"AssemblyReader::read_member_ref_sig -> field_sig");
             }
             else 
             {
@@ -436,7 +437,7 @@ namespace stereo {
             case ElementType::String:
                 return get_primitive_type(type);
             default:
-                throw "AssemblyReader::read_type_sig -> Unsupported element type";
+                throw exceptions::NotImplementedException(L"AssemblyReader::read_type_sig -> Unsupported element type");
             }
         }
 

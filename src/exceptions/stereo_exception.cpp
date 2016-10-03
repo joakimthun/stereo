@@ -6,11 +6,11 @@
 namespace stereo {
     namespace exceptions {
 
-        StereoException::StereoException(const std::string& message) : message_(message) {}
+        StereoException::StereoException(const std::wstring& message) : message_(message) {}
 
-        const char * StereoException::what() const throw()
+        const std::wstring& StereoException::msg() const
         {
-            return message_.c_str();
+            return message_;
         }
 
     }
