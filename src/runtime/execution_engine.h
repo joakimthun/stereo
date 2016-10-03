@@ -7,7 +7,6 @@
 #include "../common/typedef.h"
 #include "stereo_object.h"
 #include "call_stack.h"
-#include "stack.h"
 #include "../assemblies/assembly.h"
 #include "../assemblies/method_def.h"
 #include "../assemblies/method_ref.h"
@@ -37,7 +36,8 @@ namespace stereo {
             std::unique_ptr<logging::ILogger> logger_;
             assemblies::Assembly* assembly_;
             CallStack call_stack_;
-            Stack stack_;
+            u32 sp_;
+            StereoObject* stack_;
             u32 ip_;
             const assemblies::Instruction* current_instruction_;
 

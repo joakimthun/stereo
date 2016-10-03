@@ -1,5 +1,7 @@
 #include "execution_engine.h"
 
+#include <stdlib.h>
+
 #include "method_interceptors.h"
 
 namespace stereo {
@@ -9,11 +11,16 @@ namespace stereo {
             : 
             logger_(std::make_unique<logging::ConsoleLogger>()), 
             assembly_(assembly), 
-            ip_(0)
+            ip_(0),
+            sp_(0)
         {
+            stack_ = static_cast<StereoObject*>(malloc(1024 * 1024));
         }
 
-        ExecutionEngine::~ExecutionEngine() {}
+        ExecutionEngine::~ExecutionEngine() 
+        {
+            free(stack_);
+        }
 
         void ExecutionEngine::execute()
         {
@@ -57,13 +64,13 @@ namespace stereo {
 
         void ExecutionEngine::call(const assemblies::MethodDef* method)
         {
-            call_stack_.push(StackFrame(method, stack_.sp()));
+            call_stack_.push(StackFrame(method, sp_));
         }
 
         void ExecutionEngine::call(const assemblies::MethodRef* method)
         {
             auto method_ref = static_cast<const assemblies::MethodRef*>(current_instruction_->operand);
-            if (!try_call_interceptor(method_ref->fullname(), stack_))
+            if (!try_call_interceptor(method_ref->fullname(), stack_, sp_))
                 throw "ExecutionEngine::call -> Unsupported MethodRef";
         }
 
@@ -74,7 +81,8 @@ namespace stereo {
 
         void ExecutionEngine::ldstr()
         {
-            stack_.push_str(static_cast<const assemblies::InlineString*>(current_instruction_->operand));
+            auto inl_str = static_cast<const assemblies::InlineString*>(current_instruction_->operand);
+            stack_[++sp_] = StereoObject(&inl_str->value);
         }
 
         void ExecutionEngine::set_current_instruction()

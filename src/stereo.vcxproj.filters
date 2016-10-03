@@ -114,9 +114,6 @@
     <ClInclude Include="runtime\method_interceptors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="runtime\stack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="common\maybe.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -162,9 +159,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="runtime\stack_impl.h">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="runtime\stack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

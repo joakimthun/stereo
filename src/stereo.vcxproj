@@ -133,7 +133,6 @@
     <ClCompile Include="pe\pe_image_reader.cpp" />
     <ClCompile Include="runtime\execution_engine.cpp" />
     <ClCompile Include="runtime\method_interceptors.cpp" />
-    <ClCompile Include="runtime\stack.cpp" />
     <ClCompile Include="runtime\stack_impl.h" />
     <ClCompile Include="runtime\stereo_object.cpp" />
     <ClCompile Include="stereo.cpp" />
@@ -172,7 +171,6 @@
     <ClInclude Include="runtime\call_stack.h" />
     <ClInclude Include="runtime\execution_engine.h" />
     <ClInclude Include="runtime\method_interceptors.h" />
-    <ClInclude Include="runtime\stack.h" />
     <ClInclude Include="runtime\stereo_object.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

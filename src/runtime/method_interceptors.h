@@ -2,12 +2,14 @@
 
 #include <string>
 
+#include "../common/typedef.h"
+
 namespace stereo {
     namespace runtime {
 
-        class Stack;
+        class StereoObject;
 
-        bool try_call_interceptor(const std::wstring& fullname, Stack& stack);
+        bool try_call_interceptor(const std::wstring& fullname, StereoObject* stack, u32& sp);
 
     }
 }
