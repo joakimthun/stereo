@@ -14,7 +14,7 @@ namespace stereo {
             ip_(0),
             sp_(0)
         {
-            stack_ = static_cast<StereoObject*>(malloc(1024 * 1024));
+            stack_ = static_cast<StereoObject*>(calloc(1024, 1024));
         }
 
         ExecutionEngine::~ExecutionEngine() 
